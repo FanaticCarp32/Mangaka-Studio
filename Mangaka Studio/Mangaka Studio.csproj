@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <RootNamespace>Mangaka_Studio</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\09937cff-bec9-4632-adb8-109a03fe1a26.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\icons8-карандаш.png" />
+    <None Remove="Resources\icons8-ластик.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\09937cff-bec9-4632-adb8-109a03fe1a26.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
+    <Folder Include="Services\" />
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\icons8-карандаш.png" />
+    <Resource Include="Resources\icons8-кисть.png" />
+    <Resource Include="Resources\icons8-ластик.png" />
+    <Resource Include="Resources\icons8-ручка.png" />
+  </ItemGroup>
+
+</Project>
