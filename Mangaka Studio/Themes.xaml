@@ -1,14 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Mangaka_Studio.Controls">
-    <Color x:Key="MainColorDark1">#03045e</Color>
-    <Color x:Key="MainColorDark2">#0077b6</Color>
-    <Color x:Key="MainColorMedium">#00b4d8</Color>
-    <Color x:Key="MainColorLight2">#90e0ef</Color>
-    <Color x:Key="MainColorLight1">#caf0f8</Color>
+    <Color x:Key="MainColorDark1">#595959</Color>
+    <Color x:Key="MainColorDark2">#7f7f7f</Color>
+    <Color x:Key="MainColorMedium">#a5a5a5</Color>
+    <Color x:Key="MainColorLight2">#cccccc</Color>
+    <Color x:Key="MainColorLight1">#f2f2f2</Color>
     <Color x:Key="AccentColor">#FF4081</Color>
     <Color x:Key="BackGroundColor">#F0F0F0</Color>
-
+    <SolidColorBrush x:Key="MainColor">#03045e</SolidColorBrush>
+    
     <LinearGradientBrush x:Key="MainGradient" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="{StaticResource MainColorDark2}" Offset="0"></GradientStop>
         <GradientStop Color="{StaticResource MainColorMedium}" Offset="1"></GradientStop>
@@ -34,9 +35,9 @@
 
     <Style x:Key="MenuPanel" TargetType="StackPanel">
         <Setter Property="Orientation" Value="Horizontal"></Setter>
-        <Setter Property="Background" Value="{StaticResource MainGradient}"></Setter>
+        <Setter Property="Background" Value="{StaticResource MainGradientInverse}"></Setter>
         <Setter Property="Height" Value="27"></Setter>
-        <Setter Property="Margin" Value="0,0,0,5"></Setter>
+        <Setter Property="Margin" Value="0,0,0,0"></Setter>
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect Color="Black" ShadowDepth="2" BlurRadius="4"></DropShadowEffect>
@@ -44,28 +45,44 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ToolsParametr" TargetType="WrapPanel">
+        <Setter Property="Background" Value="{StaticResource MainGradientInverse}"></Setter>
+        <Setter Property="Orientation" Value="Vertical"></Setter>
+        <Setter Property="Width" Value="180"></Setter>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="BorderCanvas" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource MainGradientDarkInverse}"></Setter>
+        <Setter Property="BorderThickness" Value="2"></Setter>
+        <Setter Property="BorderBrush" Value="{StaticResource MainGradientDarkInverse}"></Setter>
+    </Style>
+    
     <Style TargetType="local:IconButton">
         <Setter Property="Background" Value="{StaticResource MainGradient}"></Setter>
         <Setter Property="Foreground" Value="White"></Setter>
         <Setter Property="FontSize" Value="14"></Setter>
-        <Setter Property="Padding" Value="2"></Setter>
-        <Setter Property="BorderThickness" Value="1"></Setter>
         <Setter Property="Cursor" Value="Hand"></Setter>
         <Setter Property="Margin" Value="2"></Setter>
+        <Setter Property="Padding" Value="2"></Setter>
         
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:IconButton">
                     <Grid>
-                        <Border Background="{TemplateBinding Background}" CornerRadius="2" Padding="2">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="5" BorderThickness="0" Margin="0,1,0,1">
                             <Border.Effect>
                                 <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
                             </Border.Effect>
                         
                         </Border>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <Image Source="{Binding IconSource, RelativeSource={RelativeSource TemplatedParent}}" Width="20" Height="20" Margin="1,0,1,0"></Image>
-                            <ContentPresenter HorizontalAlignment="Center"></ContentPresenter>
+                            <Image Source="{Binding IconSource, RelativeSource={RelativeSource TemplatedParent}}" Width="18" Height="18" Margin="1,1,1,1"></Image>
+                            <ContentPresenter Margin="0,0,5,0" HorizontalAlignment="Center"></ContentPresenter>
                         </StackPanel>
                     </Grid>
                 </ControlTemplate>
@@ -85,12 +102,13 @@
     </Style>
 
     <Style TargetType="Menu">
-        <Setter Property="Background" Value="{StaticResource MainGradient}"></Setter>
+        <Setter Property="Background" Value="Transparent"></Setter>
         <Setter Property="FontSize" Value="14"></Setter>
         <Setter Property="Padding" Value="0"></Setter>
         <Setter Property="BorderThickness" Value="0"></Setter>
         <Setter Property="Cursor" Value="Hand"></Setter>
         <Setter Property="Margin" Value="2"></Setter>
+        <Setter Property="Opacity" Value="1"></Setter>
     </Style>
 
     <Style TargetType="MenuItem">
@@ -109,7 +127,7 @@
                         <!-- Основной фон кнопки -->
                         <Border x:Name="Border"
                             Background="{TemplateBinding Background}"
-                            Padding="5" CornerRadius="2">
+                            Padding="5" CornerRadius="2" BorderThickness="0">
                             <Border.Effect>
                                 <DropShadowEffect Color="Black" 
                                               BlurRadius="4" 

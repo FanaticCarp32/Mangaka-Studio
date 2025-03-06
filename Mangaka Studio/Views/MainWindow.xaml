@@ -1,0 +1,73 @@
+﻿<Window x:Class="Mangaka_Studio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mangaka_Studio.Controls"
+        xmlns:tools="clr-namespace:Mangaka_Studio.ViewModels"
+        xmlns:enums="clr-namespace:Mangaka_Studio.Services"
+        mc:Ignorable="d"
+        Title="Mangaka Studio" Height="540" Width="960" 
+        WindowState="Maximized"
+        Background="Transparent">
+
+    <DockPanel>
+        <StackPanel Style="{StaticResource MenuPanel}" DockPanel.Dock="Top">
+            <Menu>
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Открыть"></MenuItem>
+                    <MenuItem Header="Сохранить"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="Правка">
+                    <MenuItem Header="Назад"></MenuItem>
+                    <MenuItem Header="Вперед"></MenuItem>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+        <Border BorderThickness="1" DockPanel.Dock="Top" BorderBrush="{StaticResource MainGradientDark}"></Border>
+        <StackPanel DataContext="{Binding ToolsVM}" Style="{StaticResource MenuPanel}" DockPanel.Dock="Top">
+            <local:IconButton IconSource="Resources\icons8-кисть.png">Кисть</local:IconButton>
+            <local:IconButton IconSource="Resources\icons8-карандаш.png">Карандаш</local:IconButton>
+            <local:IconButton Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Pen}" IconSource="Resources\icons8-ручка.png">Ручка</local:IconButton>
+            <local:IconButton Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Eraser}" IconSource="Resources\icons8-ластик.png" Cursor="Hand">Ластик</local:IconButton>
+        </StackPanel>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Top" BorderBrush="{StaticResource MainColor}"></Border>
+        <WrapPanel Style="{StaticResource ToolsParametr}" DockPanel.Dock="Left">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+            </Grid>
+        </WrapPanel>
+
+        <StackPanel Style="{StaticResource MenuPanel}">
+
+        </StackPanel>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Left" BorderBrush="{StaticResource MainColor}"></Border>
+        <WrapPanel Style="{StaticResource ToolsParametr}" DockPanel.Dock="Right">
+
+        </WrapPanel>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Right" BorderBrush="{StaticResource MainColor}"></Border>
+        <StackPanel Style="{StaticResource MenuPanel}" DockPanel.Dock="Bottom">
+
+        </StackPanel>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Bottom" BorderBrush="{StaticResource MainColor}"></Border>
+        <Grid x:Name="GridCanvas" Background="Gray" DockPanel.Dock="Bottom" Cursor="">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border Name="DrawBorder" Background="Transparent"  ClipToBounds="True" Grid.Row="0" Cursor="">
+                <Canvas RenderTransform="{Binding CanvasMatrix}"  DataContext="{Binding CanvasVM}" Background="White" x:Name="MainDrawing" Cursor="Cross" Panel.ZIndex="0" 
+                        MouseDown="MainDrawing_MouseDown" MouseEnter="MainDrawing_MouseEnter" MouseLeave="MainDrawing_MouseLeave" MouseMove="MainDrawing_MouseMove" MouseUp="MainDrawing_MouseUp">
+                    
+                </Canvas>
+            </Border>
+        </Grid>
+    </DockPanel>
+    
+</Window>
