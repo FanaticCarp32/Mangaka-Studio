@@ -13,6 +13,8 @@
   <ItemGroup>
     <None Remove="Resources\icons8-карандаш.png" />
     <None Remove="Resources\icons8-ластик.png" />
+    <None Remove="Resources\icons8-пипетка.png" />
+    <None Remove="Resources\soft-eraser.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,18 +22,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Views\" />
-    <Folder Include="Services\" />
-    <Folder Include="Commands\" />
+    <Resource Include="Resources\arrow-reset.png" />
+    <Resource Include="Resources\cursor.cur" />
+    <Resource Include="Resources\free-icon-cross.png" />
+    <Resource Include="Resources\free-icon-plus.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.116.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\free-icon-right-arrow.png" />
     <Resource Include="Resources\icons8-карандаш.png" />
     <Resource Include="Resources\icons8-кисть.png" />
     <Resource Include="Resources\icons8-ластик.png" />
+    <Resource Include="Resources\icons8-пипетка.png" />
     <Resource Include="Resources\icons8-ручка.png" />
+    <Resource Include="Resources\hard-eraser.png" />
+    <Resource Include="Resources\soft-eraser.png" />
   </ItemGroup>
 
 </Project>
