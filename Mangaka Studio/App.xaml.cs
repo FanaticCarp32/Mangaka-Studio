@@ -32,7 +32,9 @@ namespace Mangaka_Studio
 
             serviceDescriptors.AddSingleton<CanvasViewModel>();
 
-            serviceDescriptors.AddSingleton<SkiaCanvas>();
+            serviceDescriptors.AddSingleton<ColorPickerViewModel>();
+
+            serviceDescriptors.AddSingleton<LayerViewModel>();
 
             serviceDescriptors.AddSingleton<MainViewModel>();
 

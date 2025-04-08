@@ -8,149 +8,142 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SkiaSharp;
+using System.Windows.Ink;
+using SkiaSharp.Views.WPF;
+using Mangaka_Studio.ViewModels;
+using System.Windows.Documents;
 
 namespace Mangaka_Studio.Models
 {
     class PenTool : DrawingTools
     {
-        private bool flag = false;
-        private List<Point> listPoints = new List<Point>();
-        private PathFigure pathFigure;
-        private PathGeometry pathGeometry;
-        private Path path;
+        public override ToolsSettingsViewModel Settings { get; }
 
-        public override void OnMouseDown(Canvas canvas, Point pos)
+        private bool _isDrawing = false;
+        private SKSurface surface;
+
+        public PenTool(ToolsSettingsViewModel penSettings)
         {
-            if (canvas == null) return;
-            flag = true;
-            listPoints.Clear();
-            listPoints.Add(pos);
-            listPoints.Add(pos);
-            
-            path = new Path
-            {
-                Stroke = Brushes.Black,
-                StrokeThickness = 2,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeLineJoin = PenLineJoin.Round
-            };
-            pathGeometry = new PathGeometry();
-            pathFigure = new PathFigure { StartPoint = pos, IsClosed = false, IsFilled = false };
-            pathGeometry.Figures.Add(pathFigure);
-            path.Data = pathGeometry;
-            canvas.Children.Add(path);
+            Settings = penSettings;
         }
 
-        public override void OnMouseMove(Canvas canvas, Point pos)
+        public override void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
         {
-            if (flag && canvas != null && path != null)
-            {
-                if (pos.X < 0 || pos.Y < 0 || pos.X > canvas.ActualWidth || pos.Y > canvas.ActualHeight) return;
-
-                Point lastPoint = listPoints[^1];
-                double distance = Math.Sqrt(Math.Pow(pos.X - lastPoint.X, 2) + Math.Pow(pos.Y - lastPoint.Y, 2));
-                if (distance > 2)
-                {
-                    listPoints.Add(pos);
-                    Point p0 = listPoints[^2];
-                    Point p1 = listPoints[^1];
-                    Point p2 = pos;
-                    Point c0 = new Point((p0.X + p1.X) / 2, (p0.Y + p1.Y) / 2);
-                    Point c1 = new Point((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
-                    BezierSegment bezier = new BezierSegment(
-                        c0,
-                        c1,
-                        pos,
-                        true
-                    );
-                    pathFigure.Segments.Add(bezier);
-                }
-
-                if (listPoints.Count > 1000)
-                {
-                    listPoints.RemoveAt(0);
-                }
-            }
-        }
-
-        public override void OnMouseUp()
-        {
-            flag = false;
-            path = null;
-        }
-
-        public override void OnMouseLeave(Canvas canvas, Point pos)
-        {
-            if (Mouse.LeftButton == MouseButtonState.Pressed && flag)
-            {
-                if (pos.X < 0) pos.X = 0;
-                if (pos.Y < 0) pos.Y = 0;
-                if (pos.X > canvas.ActualWidth) pos.X = canvas.ActualWidth;
-                if (pos.Y > canvas.ActualHeight) pos.Y = canvas.ActualHeight;
-                Point p0 = listPoints[^2];
-                Point p1 = listPoints[^1];
-                Point p2 = pos;
-                Point c0 = new Point((p0.X + p1.X) / 2, (p0.Y + p1.Y) / 2);
-                Point c1 = new Point((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
-                BezierSegment bezier = new BezierSegment(
-                        c0,
-                        c1,
-                        pos,
-                        true
-                    );
-                pathFigure.Segments.Add(bezier);
-            }
-            
-            path = null;
-        }
-        
-        public override void OnMouseEnter(Canvas canvas, Point pos)
-        {
-            if (flag)
-            {
-                listPoints.Clear();
-                double left = pos.X;                                // Расстояние до левой границы
-                double right = canvas.ActualWidth - pos.X;         // Расстояние до правой границы
-                double top = pos.Y;                                 // Расстояние до верхней границы
-                double bottom = canvas.ActualHeight - pos.Y;       // Расстояние до нижней границы
-
-                // Определяем, какая граница ближе
-                if (left <= right && left <= top && left <= bottom)
-                {
-                    pos.X = 0; // Ближе к левой границе
-                }
-                else if (right <= left && right <= top && right <= bottom)
-                {
-                    pos.X = canvas.ActualWidth; // Ближе к правой границе
-                }
-                else if (top <= left && top <= right && top <= bottom)
-                {
-                    pos.Y = 0; // Ближе к верхней границе
-                }
-                else if (bottom <= left && bottom <= right && bottom <= top)
-                {
-                    pos.Y = canvas.ActualHeight; // Ближе к нижней границе
-                }
-
-
-                listPoints.Add(pos);
-                listPoints.Add(pos);
-
-                path = new Path
-                {
-                    Stroke = Brushes.Black,
-                    StrokeThickness = 2,
-                    StrokeStartLineCap = PenLineCap.Round,
-                    StrokeEndLineCap = PenLineCap.Round,
-                    StrokeLineJoin = PenLineJoin.Round
-                };
-                pathGeometry = new PathGeometry();
-                pathFigure = new PathFigure { StartPoint = pos };
-                pathGeometry.Figures.Add(pathFigure);
-                path.Data = pathGeometry;
-                canvas.Children.Add(path);
+            _isDrawing = true;
                 
+            surface = SKSurface.Create(layerViewModel.SelectLayer.Surface.Snapshot().Info);
+            surface.Canvas.Clear(SKColors.Transparent);
+            ApplyPen(canvasViewModel, pos, colorPickerViewModel, layerViewModel);
+        }
+
+        public override void OnMouseMove(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
+        {
+            if (_isDrawing)
+            {
+                ApplyPen(canvasViewModel, pos, colorPickerViewModel, layerViewModel);
+            }
+        }
+
+        private void ApplyPen(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
+        {
+            if (layerViewModel.SelectLayer == null) return;
+
+            /*var penSettings = Settings as PenToolSettingsViewModel;
+            var brushBitmap = CreateBrushBitmap((int)penSettings.StrokeWidth, penSettings.StrokeColor);
+            float brushSpacing = penSettings.StrokeWidth * 0.3f; // шаг между отпечатками кисти
+
+            SKPoint last = canvasViewModel.LastErasePoint ?? pos;
+            SKPoint current = pos;
+
+            float distance = SKPoint.Distance(last, current);
+            int steps = Math.Max(1, (int)(distance / brushSpacing)); // минимум 1 шаг
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = i / (float)steps;
+                float x = last.X + (current.X - last.X) * t - brushBitmap.Width / 2f;
+                float y = last.Y + (current.Y - last.Y) * t - brushBitmap.Height / 2f;
+
+                layerViewModel.SelectLayer.Surface.Canvas.DrawBitmap(brushBitmap, new SKPoint(x, y));
+            }
+
+            canvasViewModel.LastErasePoint = pos;*/
+
+            var penSettings = Settings as PenToolSettingsViewModel;
+            var trans = penSettings.Transparent * 255 / 100;
+            var color = penSettings.StrokeColor;
+            var color1 = penSettings.StrokeColor1;
+
+            using (var paint = new SKPaint
+            {
+                Color = new SKColor(color.Red, color.Green, color.Blue, (byte)trans),
+                StrokeWidth = penSettings.StrokeWidth,
+                Style = SKPaintStyle.Stroke,
+                StrokeCap = SKStrokeCap.Round,
+                IsAntialias = penSettings.IsSmooth,
+                BlendMode = SKBlendMode.Src
+            })
+            {
+                if (!colorPickerViewModel.SwitchColor)
+                {
+                    paint.Color = new SKColor(color1.Red, color1.Green, color1.Blue, (byte)trans);
+                }
+                if (canvasViewModel.LastErasePoint.HasValue)
+                {
+                    surface.Canvas.DrawLine(canvasViewModel.LastErasePoint.Value, pos, paint);
+                }
+                else
+                {
+                    surface.Canvas.DrawPoint(pos, paint);
+                }
+            }
+            layerViewModel.tempSurface = surface;
+            canvasViewModel.LastErasePoint = pos;
+            //layerViewModel.SelectLayer.Surface.Canvas.Flush();
+        }
+
+        private SKBitmap CreateBrushBitmap(int size, SKColor baseColor)
+        {
+            var bitmap = new SKBitmap(size, size);
+            using var canvas = new SKCanvas(bitmap);
+            canvas.Clear(SKColors.Transparent);
+
+            var center = new SKPoint(size / 2f, size / 2f);
+            var radius = size / 2f;
+
+            using var paint = new SKPaint
+            {
+                IsAntialias = true,
+                Color = new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, baseColor.Alpha),
+                BlendMode = SKBlendMode.Src
+                //Shader = SKShader.CreateRadialGradient(
+                //    center,
+                //    radius,
+                //    new[] {
+                //new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, baseColor.Alpha),
+                //new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, 0)
+                //    },
+                //    new float[] { 0f, 1f },
+                //    SKShaderTileMode.Clamp
+                //)
+            };
+
+            canvas.DrawCircle(center, radius, paint);
+            return bitmap;
+        }
+
+
+        public override void OnMouseUp(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel)
+        {
+            if (_isDrawing)
+            {
+                layerViewModel.tempSurface = null;
+                layerViewModel.SelectLayer.Surface.Canvas.DrawSurface(surface, 0, 0);
+                surface = SKSurface.Create(layerViewModel.SelectLayer.Surface.Snapshot().Info);
+                surface.Canvas.Clear(SKColors.Transparent);
+                canvasViewModel.LastErasePoint = null;
+                _isDrawing = false;
             }
         }
     }

@@ -29,11 +29,11 @@ namespace Mangaka_Studio.Commands
         public bool CanExecute(object param) => canExecute == null || canExecute(param);
         public void Execute(object param)
         {
-            if (param == null)
+            /*if (param == null)
             {
                 MessageBox.Show("Ошибка: параметр команды равен null");
                 return;
-            }
+            }*/
             execute(param);
         }
 

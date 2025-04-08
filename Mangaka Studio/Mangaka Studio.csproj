@@ -13,10 +13,19 @@
   <ItemGroup>
     <None Remove="Resources\icons8-карандаш.png" />
     <None Remove="Resources\icons8-ластик.png" />
+    <None Remove="Resources\icons8-пипетка.png" />
+    <None Remove="Resources\soft-eraser.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Resources\09937cff-bec9-4632-adb8-109a03fe1a26.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\arrow-reset.png" />
+    <Resource Include="Resources\cursor.cur" />
+    <Resource Include="Resources\free-icon-cross.png" />
+    <Resource Include="Resources\free-icon-plus.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +34,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\free-icon-right-arrow.png" />
     <Resource Include="Resources\icons8-карандаш.png" />
     <Resource Include="Resources\icons8-кисть.png" />
     <Resource Include="Resources\icons8-ластик.png" />
+    <Resource Include="Resources\icons8-пипетка.png" />
     <Resource Include="Resources\icons8-ручка.png" />
+    <Resource Include="Resources\hard-eraser.png" />
+    <Resource Include="Resources\soft-eraser.png" />
   </ItemGroup>
 
 </Project>

@@ -6,55 +6,278 @@
         xmlns:local="clr-namespace:Mangaka_Studio.Controls"
         xmlns:tools="clr-namespace:Mangaka_Studio.ViewModels"
         xmlns:enums="clr-namespace:Mangaka_Studio.Services"
+        xmlns:models="clr-namespace:Mangaka_Studio.Models"
         mc:Ignorable="d"
         Title="Mangaka Studio" Height="540" Width="960" 
         WindowState="Maximized"
-        Background="Transparent">
-
-    <DockPanel>
-        <StackPanel Style="{StaticResource MenuPanel}" DockPanel.Dock="Top">
-            <Menu>
-                <MenuItem Header="Файл">
+        Background="Transparent"
+        Deactivated="Window_Deactivated"
+        PreviewMouseDown="Window_PreviewMouseDown">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="Z" Command="{Binding LayerVM.UndoCommand}"></KeyBinding>
+        <KeyBinding Modifiers="Ctrl+Shift" Key="Z" Command="{Binding LayerVM.RedoCommand}"></KeyBinding> 
+    </Window.InputBindings>
+    <DockPanel Cursor="">
+        <StackPanel Background="{StaticResource MainGradientInverse}" DockPanel.Dock="Top">
+            <Menu Cursor="Hand">
+                <MenuItem Header="Файл" Cursor="Hand">
+                    <MenuItem Header="Создать"></MenuItem>
                     <MenuItem Header="Открыть"></MenuItem>
                     <MenuItem Header="Сохранить"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="Правка">
-                    <MenuItem Header="Назад"></MenuItem>
-                    <MenuItem Header="Вперед"></MenuItem>
+                <MenuItem DataContext="{Binding LayerVM}" Header="Правка">
+                    <MenuItem Header="Назад" Command="{Binding UndoCommand}"></MenuItem>
+                    <MenuItem Header="Вперед" Command="{Binding RedoCommand}"></MenuItem>
+                    <MenuItem Header="Вперед" Command="{Binding RedoCommand}"></MenuItem>
+                </MenuItem>
+                <MenuItem DataContext="{Binding CanvasVM}" Header="Вид" Cursor="Hand">
+                    <MenuItem Header="Сетка">
+                        <MenuItem Header="Сетка1" Command=""></MenuItem>
+                    </MenuItem>
                 </MenuItem>
             </Menu>
         </StackPanel>
-        <Border BorderThickness="1" DockPanel.Dock="Top" BorderBrush="{StaticResource MainGradientDark}"></Border>
-        <StackPanel DataContext="{Binding ToolsVM}" Style="{StaticResource MenuPanel}" DockPanel.Dock="Top">
-            <local:IconButton IconSource="Resources\icons8-кисть.png">Кисть</local:IconButton>
-            <local:IconButton IconSource="Resources\icons8-карандаш.png">Карандаш</local:IconButton>
-            <local:IconButton Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Pen}" IconSource="Resources\icons8-ручка.png">Ручка</local:IconButton>
-            <local:IconButton Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Eraser}" IconSource="Resources\icons8-ластик.png" Cursor="Hand">Ластик</local:IconButton>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Top" BorderBrush="{StaticResource MainColor}"></Border>
+        <StackPanel DataContext="{Binding ToolsVM}" Style="{StaticResource MenuPanel}" DockPanel.Dock="Top" Cursor="">
+            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" IconSource="Resources\icons8-кисть.png">Кисть</local:IconRadioButton>
+            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" IconSource="Resources\icons8-карандаш.png">Карандаш</local:IconRadioButton>
+            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Pen}" IconSource="Resources\icons8-ручка.png">Ручка</local:IconRadioButton>
+            <local:IconRadioButton GroupName="Tools" Margin="5" x:Name="Pipette"  Command="{Binding DataContext.ToolsVM.SelectPenCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" CommandParameter="{x:Static enums:ToolsType.Pipette}" Style="{StaticResource ToolsButton}" IconSource="Resources\icons8-пипетка.png">Пипетка</local:IconRadioButton>
+            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" Command="{Binding SelectPenCommand}" CommandParameter="{Binding LastEraseToolsType}" IconSource="Resources\icons8-ластик.png">Ластик</local:IconRadioButton>
         </StackPanel>
         <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Top" BorderBrush="{StaticResource MainColor}"></Border>
-        <WrapPanel Style="{StaticResource ToolsParametr}" DockPanel.Dock="Left">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
+        <Grid Background="{StaticResource MainColorGrid}" DockPanel.Dock="Left">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Background="{StaticResource MainGradientInverse}" DataContext="{Binding CanvasVM}">
+                <ContentControl Content="{Binding CurrentTool.Settings}" ContentTemplateSelector="{StaticResource ToolTemplateSelector}" HorizontalAlignment="Stretch">
+
+                </ContentControl>
             </Grid>
-        </WrapPanel>
+            <Border Grid.Row="1" Height="2" Style="{StaticResource BorderInner}"></Border>
+            <Grid Grid.Row="2" Background="{StaticResource MainColorGrid}"  DataContext="{Binding ColorVM}" Margin="10" Cursor="">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200"></RowDefinition>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                </Grid.RowDefinitions>
 
-        <StackPanel Style="{StaticResource MenuPanel}">
+                <Grid x:Name="ColorPicker"
+                      Grid.Row ="0"
+                      MouseDown="ColorPicker_MouseDown"
+                      MouseMove="ColorPicker_MouseMove">
+                    <Rectangle Width="200" Height="200">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0"></GradientStop>
+                                <GradientStop Color="{Binding Hue, Converter={StaticResource HueToColorConverter}}" Offset="1"></GradientStop>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Width="200" Height="200">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="Black" Offset="0"></GradientStop>
+                                <GradientStop Color="Transparent" Offset="1"></GradientStop>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Width="5" Height="5" Stroke="{Binding SelectedColorInverse, Converter={StaticResource SKColorToBrushConverter}}" StrokeThickness="2" RenderTransformOrigin="0.5,0.5" Margin="0,0,195,195">
+                        <Rectangle.RenderTransform>
+                            <TranslateTransform X="{Binding CursorX}" Y="{Binding CursorY}"></TranslateTransform>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                </Grid>
+                <Grid Grid.Row="1" Margin="0,5">
+                    <Slider Style="{StaticResource ColorSlider}" Name="HueSlider"
+                        Minimum="0" Maximum="360"
+                        Value="{Binding Hue, Mode=TwoWay}"
+                        Background="Transparent" Margin="0,0,0,2"/>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <RadioButton GroupName="ColorGroup" x:Name="SelecteColor" IsChecked="True" Margin="0,0,10,0" Grid.Row="0" Background="{Binding SelectedColor, Converter={StaticResource SKColorToBrushConverter}}" Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButtonPalette}"></RadioButton>
+                        <local:IconButton x:Name="AddColor" Command="{Binding AddColorCommand}" Style="{StaticResource UpdateIconButton}" IconSource="Resources\free-icon-plus.png" Margin="2,4,12,0" Grid.Row="1"></local:IconButton>
+                        <Popup x:Name="PopupPaletteColor" IsOpen="{Binding IsExpanded}" PlacementTarget="{Binding ElementName=ArrayColor}" AllowsTransparency="True" VerticalOffset="5" HorizontalOffset="10" Placement="Right" StaysOpen="True">
+                            <Border Background="{StaticResource MainGradient}" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                        <RowDefinition Height="1"></RowDefinition>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <ItemsControl Grid.Column="0" Grid.Row="0" ItemsSource="{Binding AvailableColors}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel x:Name="PanelPalette" Orientation="Horizontal" MaxHeight="300" Width="200"></WrapPanel>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <RadioButton GroupName="ColorGroup" Grid.Column="0" Width="40" Height="25" Margin="0,3,0,3" Background="{Binding Converter={StaticResource SKColorToBrushConverter}}" Style="{StaticResource ButtonColor}"
+                                                             Command="{Binding DataContext.ColorVM.GetColorButton, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                                             CommandParameter="{Binding}"></RadioButton>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Border Grid.Row="1" Grid.Column="0" BorderThickness="1" BorderBrush="Black"></Border>
+                                    <Grid Grid.Column="0" Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="1"></ColumnDefinition>
+                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center" Grid.Column="0" Orientation="Horizontal">
+                                            <TextBlock FontSize="16" Margin="5" VerticalAlignment="Center">R:</TextBlock>
+                                            <TextBox Width="40" Height="30" MaxLength="3" Style="{StaticResource TextBoxRGB}" Text="{Binding Red, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                            <TextBlock FontSize="16" Margin="5" VerticalAlignment="Center">G:</TextBlock>
+                                            <TextBox Width="40" Height="30" MaxLength="3" Style="{StaticResource TextBoxRGB}" Text="{Binding Green, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                            <TextBlock FontSize="16" Margin="5" VerticalAlignment="Center">B:</TextBlock>
+                                            <TextBox Margin="0,0,5,0" Width="40" Height="30" MaxLength="3" Style="{StaticResource TextBoxRGB}" Text="{Binding Blue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" BorderThickness="1" BorderBrush="Black"></Border>
+                                        <local:IconButton x:Name="DeleteColor" Width="20" Height="20" Grid.Column="2" Style="{StaticResource UpdateIconButton}" IconSource="Resources\free-icon-cross.png"
+                                                          Command="{Binding DeleteColorCommand}"></local:IconButton>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <Grid Grid.Column="1" Cursor="">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton GroupName="ColorGroup" Margin="5,2,0,2" Grid.Column="0" Grid.Row="0" Background="White" Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButton}" CommandParameter="{Binding Path=Background, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorStringToSKColorConverter}}"></RadioButton>
+                        <RadioButton GroupName="ColorGroup" Margin="5,2,0,2" Grid.Column="1" Grid.Row="0" Background="Blue"  Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButton}" CommandParameter="{Binding Path=Background, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorStringToSKColorConverter}}"></RadioButton>
+                        <RadioButton GroupName="ColorGroup" Margin="5,2,0,2" Grid.Column="2" Grid.Row="0" Background="Red" Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButton}" CommandParameter="{Binding Path=Background, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorStringToSKColorConverter}}"></RadioButton>
+                        <RadioButton GroupName="ColorGroup" Margin="5,4,0,0" Grid.Column="0" Grid.Row="1" Background="Black" Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButton}" CommandParameter="{Binding Path=Background, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorStringToSKColorConverter}}"></RadioButton>
+                        <RadioButton GroupName="ColorGroup" Margin="5,4,0,0" Grid.Column="1" Grid.Row="1" Background="Green" Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButton}" CommandParameter="{Binding Path=Background, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorStringToSKColorConverter}}"></RadioButton>
+                        <RadioButton GroupName="ColorGroup" Margin="5,4,0,0" Grid.Column="2" Grid.Row="1" Background="Gray" Style="{StaticResource ButtonColor}"
+                                     Command="{Binding GetColorButton}" CommandParameter="{Binding Path=Background, RelativeSource={RelativeSource Self}, Converter={StaticResource ColorStringToSKColorConverter}}"></RadioButton>
+                    </Grid>
+                    <local:IconButton x:Name="ArrayColor" Grid.Column="2" Margin="10,10,0,10" Command="{Binding ToggleExpandCommand}" Style="{StaticResource UpdateIconButton}" IconSource="Resources\free-icon-right-arrow.png"></local:IconButton>
+                </Grid>
+            </Grid>
+        </Grid>
+        
 
-        </StackPanel>
         <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Left" BorderBrush="{StaticResource MainColor}"></Border>
-        <WrapPanel Style="{StaticResource ToolsParametr}" DockPanel.Dock="Right">
+        <Grid Background="{StaticResource MainColorGrid}" DockPanel.Dock="Right">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0" Style="{StaticResource ToolsParametr}" DataContext="{Binding CanvasVM}">
+                
+            </WrapPanel>
+            <Border Grid.Row="1" Style="{StaticResource BorderInner}"></Border>
+            <Grid Grid.Row="2" Background="{StaticResource MainColorGrid}" DataContext="{Binding LayerVM}" Margin="10" Cursor="">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        </WrapPanel>
+                <!-- Список слоев -->
+                <ListBox Grid.Row="0" ItemsSource="{Binding Layers}" SelectedItem="{Binding SelectLayer}" ItemContainerStyle="{StaticResource LayerListBoxItem}" 
+                         BorderThickness="1" BorderBrush="Transparent" MaxWidth="300" MaxHeight="300" Background="Transparent"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True"
+                         DragEnter="ListBox_DragEnter" DragOver="ListBox_DragOver" Drop="ListBox_Drop" PreviewMouseMove="ListBox_PreviewMouseMove">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Border Margin="5" Padding="5" Background="{StaticResource MainGradientLight}" CornerRadius="8" BorderBrush="{StaticResource MainColor}" BorderThickness="1">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                                    </Border.Effect>
+                                </Border>
+                                <Border Margin="5" Padding="5" Background="{StaticResource MainGradientLight}" CornerRadius="8" BorderBrush="{StaticResource MainColor}" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox Style="{StaticResource VSMCheckBox}" IsChecked="{Binding IsVisible}" Command="{Binding DataContext.LayerVM.ToggleVisibilityCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Margin="0,0,5,0" 
+                                      VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="LayerNameTextBlock" Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" MouseDown="TextBlock_MouseDown"/>
+                                        <TextBox x:Name="LayerNameTextBox"
+                                             Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Visibility="Collapsed"
+                                             FontSize="14"
+                                             VerticalAlignment="Center"
+                                             LostFocus="LayerNameTextBox_LostFocus"
+                                             KeyDown="LayerNameTextBox_KeyDown"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Кнопки управления -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
+                    <local:IconButton Margin="0,0,5,0" VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-plus.png" Command="{Binding AddLayerCommand}">Добавить</local:IconButton>
+                    <local:IconButton VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-cross.png" Command="{Binding DeleteLayerCommand}">Удалить</local:IconButton>
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+        
         <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Right" BorderBrush="{StaticResource MainColor}"></Border>
-        <StackPanel Style="{StaticResource MenuPanel}" DockPanel.Dock="Bottom">
 
+
+        <StackPanel Style="{StaticResource MenuPanel}" DataContext="{Binding CanvasVM}" DockPanel.Dock="Bottom" Cursor="">
+            <TextBlock VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                <Run Text="Разрешение: " />
+                <Run Text="{Binding CanvasWidth}" />
+                <Run Text=":" />
+                <Run Text="{Binding CanvasHeight}" />
+                <Run Text="px" />
+            </TextBlock>
+            <Border Style="{StaticResource BorderInner}"></Border>
+            <TextBlock Width="180" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                <Run Text="Масштаб: " />
+                <Slider Width="50" Style="{StaticResource AllSlider}" Minimum="{Binding ScaleMin}" Maximum="{Binding ScaleMax}" Value="{Binding Scale, Mode=TwoWay}"></Slider>
+                <Run Text="x" />
+                <Run Text="{Binding ScaleRound}"/>
+            </TextBlock>
+            <Border Style="{StaticResource BorderInner}"></Border>
+            <TextBlock Width="180" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                <Run Text="Ориентация: " />
+                <Slider Width="50" Style="{StaticResource AllSlider}" Minimum="0" Maximum="360" Value="{Binding Rotate, Mode=TwoWay}"></Slider>
+                <Run Text="{Binding Rotate}"/>
+            </TextBlock>
+            <Border Style="{StaticResource BorderInner}"></Border>
+            <local:IconButton Margin="5" Command="{Binding ResetCommand}" Style="{StaticResource LayersIconButton}" IconSource="Resources\arrow-reset.png" Cursor="Hand">Сброс</local:IconButton>
+            <Border Style="{StaticResource BorderInner}"></Border>
+            <TextBlock VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                <Run Text="Курсор: " />
+                <Run Text="{Binding CursorPoint}"/>
+            </TextBlock>
+            <Border Style="{StaticResource BorderInner}"></Border>
         </StackPanel>
         <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Bottom" BorderBrush="{StaticResource MainColor}"></Border>
         <Grid x:Name="GridCanvas" Background="Gray" DockPanel.Dock="Bottom" Cursor="">
@@ -62,10 +285,9 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Border Name="DrawBorder" Background="Transparent"  ClipToBounds="True" Grid.Row="0" Cursor="">
-                <Canvas RenderTransform="{Binding CanvasMatrix}"  DataContext="{Binding CanvasVM}" Background="White" x:Name="MainDrawing" Cursor="Cross" Panel.ZIndex="0" 
-                        MouseDown="MainDrawing_MouseDown" MouseEnter="MainDrawing_MouseEnter" MouseLeave="MainDrawing_MouseLeave" MouseMove="MainDrawing_MouseMove" MouseUp="MainDrawing_MouseUp">
-                    
-                </Canvas>
+                <local:SkiaCanvas DataContext="{Binding CanvasVM}" x:Name="MainDrawing" Cursor="Pen" Panel.ZIndex="0">
+
+                </local:SkiaCanvas>
             </Border>
         </Grid>
     </DockPanel>

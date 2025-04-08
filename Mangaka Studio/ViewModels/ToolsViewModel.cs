@@ -19,6 +19,20 @@ namespace Mangaka_Studio.ViewModels
         private DrawingTools current;
         private readonly IToolsFactory toolsFactory;
         private readonly CanvasViewModel canvas;
+        private ToolsType lastEraseToolsType;
+
+        public ToolsType LastEraseToolsType
+        {
+            get => lastEraseToolsType;
+            set
+            {
+                lastEraseToolsType = value;
+                OnPropertyChanged(nameof(LastEraseToolsType));
+            }
+        }
+
+        public Dictionary<ToolsType, DrawingTools> Tools { get; } = new();
+        
 
         public DrawingTools CurrentTool
         {
@@ -40,12 +54,13 @@ namespace Mangaka_Studio.ViewModels
             }
             canvas = canvas1;
             toolsFactory = toolsFactory1;
-            CurrentTool = new PenTool();
+            CurrentTool = toolsFactory.CreateDrawTools(ToolsType.Pen);
+            LastEraseToolsType = ToolsType.HardEraser;
+            Tools.Add(ToolsType.Pen, CurrentTool);
             canvas.CurrentTool = CurrentTool;
             SelectPenCommand = new RelayCommand(param => {
                 if (param is ToolsType toolsType)
                 {
-                    //MessageBox.Show($"Выбран инструмент: {toolsType}");
                     SelectTool(toolsType);
                 }
                 else
@@ -57,7 +72,23 @@ namespace Mangaka_Studio.ViewModels
 
         public void SelectTool(ToolsType type)
         {
-            CurrentTool = toolsFactory.CreateDrawTools(type);
+            if (CurrentTool is HardEraser)
+            {
+                LastEraseToolsType = ToolsType.HardEraser;
+            }
+            else if (CurrentTool is SoftEraser)
+            {
+                LastEraseToolsType = ToolsType.SoftEraser;
+            }
+            if (Tools.ContainsKey(type))
+            {
+                CurrentTool = Tools[type];
+            }
+            else
+            {
+                CurrentTool = toolsFactory.CreateDrawTools(type);
+                Tools.Add(type, CurrentTool);
+            }
             canvas.CurrentTool = CurrentTool;
         }
 
