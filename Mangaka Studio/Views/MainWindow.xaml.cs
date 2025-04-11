@@ -76,16 +76,21 @@ namespace Mangaka_Studio
 
         private void MainDrawing_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            var pos1 = e.GetPosition(MainDrawing);
+            var dpi = VisualTreeHelper.GetDpi(MainDrawing);
+            var physicalX = (float)(pos1.X * dpi.DpiScaleX);
+            var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
+            SKPoint screenPoint = new SKPoint(physicalX, physicalY);
             if (e.MiddleButton == MouseButtonState.Pressed)
             {
-                lastPos = canvas.GetCanvasPoint(e.GetPosition(this).ToSKPoint());
+                lastPos = canvas.GetCanvasPoint(screenPoint);
                 //if (lastPos.X <= canvas.CanvasWidth && lastPos.Y <= canvas.CanvasHeight && lastPos.X >= 0 && lastPos.Y >= 0) 
                 flag = true;
                 return;
             }
             if (Mouse.LeftButton != MouseButtonState.Pressed) return;
             flag = true;
-            SKPoint pos = canvas.GetCanvasPoint(e.GetPosition(MainDrawing).ToSKPoint());
+            SKPoint pos = canvas.GetCanvasPoint(screenPoint);
             if (pos.X <= canvas.CanvasWidth && pos.Y <= canvas.CanvasHeight && pos.X >= 0 && pos.Y >= 0)
             {
                 layer.SaveState();
@@ -103,14 +108,19 @@ namespace Mangaka_Studio
             {
                 Mouse.OverrideCursor = Cursors.Pen;
             }
-            SKPoint pos = canvas.GetCanvasPoint(e.GetPosition(MainDrawing).ToSKPoint());
+            var pos1 = e.GetPosition(MainDrawing);
+            var dpi = VisualTreeHelper.GetDpi(MainDrawing);
+            var physicalX = (float)(pos1.X * dpi.DpiScaleX);
+            var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
+            SKPoint screenPoint = new SKPoint(physicalX, physicalY);
+            SKPoint pos = canvas.GetCanvasPoint(screenPoint);
             if (e.MiddleButton == MouseButtonState.Pressed && flag)
             {
                 SKPoint posWindow = e.GetPosition(MainDrawing).ToSKPoint();
                 //if (!(posWindow.X <= MainDrawing.ActualWidth - 50  && posWindow.Y <= MainDrawing.ActualHeight - 50 && posWindow.X >= 0 + 50 && posWindow.Y >= 0 + 50)) return;
-                Vector d = new Vector((canvas.GetCanvasPoint(e.GetPosition(this).ToSKPoint()) - lastPos).X, (canvas.GetCanvasPoint(e.GetPosition(this).ToSKPoint()) - lastPos).Y);
+                Vector d = new Vector((canvas.GetCanvasPoint(screenPoint) - lastPos).X, (canvas.GetCanvasPoint(screenPoint) - lastPos).Y);
                 canvas.PanCommand.Execute(d);
-                lastPos = canvas.GetCanvasPoint(e.GetPosition(this).ToSKPoint());
+                lastPos = canvas.GetCanvasPoint(screenPoint);
                 return;
             }
             canvas.OnMouseMove(canvas, pos, color, layer);
@@ -118,14 +128,18 @@ namespace Mangaka_Studio
 
         private void MainDrawing_MouseMoveCursor(object sender, MouseEventArgs e)
         {
-            SKPoint pos = canvas.GetCanvasPoint(e.GetPosition(MainDrawing).ToSKPoint());
+            var pos1 = e.GetPosition(MainDrawing);
+            var dpi = VisualTreeHelper.GetDpi(MainDrawing);
+            var physicalX = (float)(pos1.X * dpi.DpiScaleX);
+            var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
+            SKPoint screenPoint = new SKPoint(physicalX, physicalY);
+            SKPoint pos = canvas.GetCanvasPoint(screenPoint);
             canvas.OnMouseMoveMouse(pos);
         }
 
         private void MainDrawing_MouseUp(object sender, MouseButtonEventArgs e)
         {
             flag = false;
-            Point pos = e.GetPosition(MainDrawing);
             canvas.OnMouseUp(canvas, layer);
         }
 

@@ -22,6 +22,7 @@ namespace Mangaka_Studio.Controls
         private readonly LayerViewModel layerViewModel;
         private LayerModel layer1;
         private LayerModel layer2;
+        private SKSurface surfaceLayer;
 
         public SkiaCanvas()
         {
@@ -37,16 +38,18 @@ namespace Mangaka_Studio.Controls
             {
                 Id = -1,
                 Name = "",
-                Surface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
+                Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
             };
             layer2 = new LayerModel
             {
                 Id = -2,
                 Name = "",
-                Surface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
+                Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
             };
-            layer1.Surface.Canvas.Clear(SKColors.Transparent);
-            layer2.Surface.Canvas.Clear(SKColors.Transparent);
+            //layer1.Surface.Canvas.Clear(SKColors.Transparent);
+            //layer2.Surface.Canvas.Clear(SKColors.Transparent);
+            //surfaceLayer?.Dispose();
+            surfaceLayer = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul));
             this.PaintSurface += OnPaintSurface;
             this.canvasViewModel.PropertyChanged += CanvasViewModel_PropertyChanged;
             this.layerViewModel.PropertyChanged += LayerViewModel_PropertyChanged;
@@ -60,36 +63,9 @@ namespace Mangaka_Studio.Controls
 
         private void LayerViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            bool flag = false;
-            
-            if (layerViewModel.Layers.Count > 2)
-            {
-                layer1.Surface.Canvas.Clear(SKColors.Transparent);
-                layer2.Surface.Canvas.Clear(SKColors.Transparent);
-                foreach (var layer in layerViewModel.Layers)
-                {
-                    if (layer.IsVisible && layer.Surface != null)
-                    {
-                        if (layerViewModel.SelectLayer == null)
-                        {
-                            layerViewModel.SelectLayer = layerViewModel.Layers.FirstOrDefault();
-                        }
-                        if (layer.Id == layerViewModel.SelectLayer.Id)
-                        {
-                            flag = true;
-                            continue;
-                        }
-                        else if (!flag)
-                        {
-                            layer1.Surface.Canvas.DrawSurface(layer.Surface, 0, 0);
-                        }
-                        else if (flag)
-                        {
-                            layer2.Surface.Canvas.DrawSurface(layer.Surface, 0, 0);
-                        }
-                    }
-                }
-            }
+            //layerViewModel.SelectLayer.Image = layerViewModel.tempSurface.Snapshot();
+            //layerViewModel.tempSurface.Canvas.Clear(SKColors.Transparent);
+            RebuildLayers();
             InvalidateVisual();
         }
 
@@ -107,86 +83,33 @@ namespace Mangaka_Studio.Controls
                 canvas.DrawRect(new SKRect(0, 0, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight), bgPaint);
             }
 
-            if (layerViewModel.Layers.Count > 2)
+            if (layerViewModel.NeedsRedraw)
             {
-                canvas.DrawSurface(layer1.Surface, 0, 0);
-                if (layerViewModel.SelectLayer.IsVisible && layerViewModel.SelectLayer.Surface != null)
+                var temp = surfaceLayer.Canvas;
+                temp.Clear(SKColors.Transparent);
+                temp.DrawImage(layer1.Image, 0, 0);
+                var selected = layerViewModel.SelectLayer;
+                if (selected != null)
                 {
-                    canvas.DrawSurface(layerViewModel.SelectLayer.Surface, 0, 0);
-                }
-                canvas.DrawSurface(layer2.Surface, 0, 0);
-            }
-            else
-            {
-                foreach (var layers in layerViewModel.Layers)
-                {
-                    if (layers.IsVisible && layers.Surface != null)
+                    if (selected.IsVisible && selected.Image != null)
                     {
-                        canvas.DrawSurface(layers.Surface, 0, 0);
+                        temp.DrawImage(selected.Image, 0, 0);
                     }
                 }
+                temp.DrawImage(layer2.Image, 0, 0);
+                
+                layerViewModel.NeedsRedraw = false;
             }
+
+            canvas.DrawSurface(surfaceLayer, 0, 0);
+
             if (layerViewModel.tempSurface != null)
             {
                 canvas.DrawSurface(layerViewModel.tempSurface, 0, 0);
             }
             if (canvasViewModel.CurrentTool is PipetteTool)
             {
-                using (var tempSurface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul)))
-                {
-                    var tempCanvas = tempSurface.Canvas;
-                    tempCanvas.Clear(SKColors.Transparent);
-                    using (var bgPaint = new SKPaint { Color = SKColors.White })
-                    {
-                        tempCanvas.DrawRect(new SKRect(0, 0, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight), bgPaint);
-                    }
-                    if (layerViewModel.Layers.Count > 2)
-                    {
-                        tempCanvas.DrawSurface(layer1.Surface, 0, 0);
-                        if (layerViewModel.SelectLayer.IsVisible && layerViewModel.SelectLayer.Surface != null)
-                        {
-                            tempCanvas.DrawSurface(layerViewModel.SelectLayer.Surface, 0, 0);
-                        }
-                        tempCanvas.DrawSurface(layer2.Surface, 0, 0);
-                    }
-                    else
-                    {
-                        foreach (var layers in layerViewModel.Layers)
-                        {
-                            if (layers.IsVisible && layers.Surface != null)
-                            {
-                                tempCanvas.DrawSurface(layers.Surface, 0, 0);
-                            }
-                        }
-                    }
-
-                    layerViewModel.Screenshot = tempSurface.Snapshot();
-                }
-                if (canvasViewModel.ColorPipette != SKColors.Transparent)
-                {
-                    using (var pipettePaint = new SKPaint
-                    {
-                        Color = SKColors.Black,
-                        StrokeWidth = 2,
-                        Style = SKPaintStyle.Stroke
-                    })
-                    {
-                        SKPoint cursorPos = canvasViewModel.CursorPoint.ToSKPoint();
-                        var r = (byte)(255 - canvasViewModel.ColorPipette.Red);
-                        var g = (byte)(255 - canvasViewModel.ColorPipette.Green);
-                        var b = (byte)(255 - canvasViewModel.ColorPipette.Blue);
-                        var invertColor = new SKColor(r, g, b, 255);
-                        pipettePaint.Color = invertColor;
-                        pipettePaint.StrokeWidth = (Math.Max(2, Math.Min(10, 5 / (float)canvasViewModel.Scale)));
-                        canvas.DrawCircle(cursorPos, 22, pipettePaint);
-                        canvas.DrawCircle(cursorPos, 18, pipettePaint);
-                        pipettePaint.Color = canvasViewModel.ColorPipette;
-                        pipettePaint.StrokeWidth = 5;
-                        canvas.DrawCircle(cursorPos, 20, pipettePaint);
-                    }
-
-                }
-                
+                DrawPipette(canvas);
             }
 
             if (canvasViewModel.EraserCursor.HasValue)
@@ -203,7 +126,67 @@ namespace Mangaka_Studio.Controls
                 }
             }
 
-            //DrawGrid(canvas, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight, 50);
+            DrawGrid(canvas, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight, 50);
+        }
+
+        private void RebuildLayers()
+        {
+            layerViewModel.NeedsRedraw = true;
+            var layer1Surface = SKSurface.Create(layer1.Image.Info);
+            var layer2Surface = SKSurface.Create(layer1.Image.Info);
+            layer1Surface.Canvas.Clear(SKColors.Transparent);
+            layer2Surface.Canvas.Clear(SKColors.Transparent);
+            bool isAfterSelected = false;
+            var selectedId = layerViewModel.SelectLayer?.Id;
+            foreach (var layer in layerViewModel.Layers)
+            {
+                if (!layer.IsVisible || layer.Image == null)
+                    continue;
+                if (layer.Id == selectedId)
+                {
+                    isAfterSelected = true;
+                    continue;
+                }
+                    
+                if (!isAfterSelected)
+                {
+                    layer1Surface.Canvas.DrawImage(layer.Image, 0, 0);
+                }
+                else if (isAfterSelected)
+                {
+                    layer2Surface.Canvas.DrawImage(layer.Image, 0, 0);
+                }
+            }
+            layer1.Image = layer1Surface.Snapshot();
+            layer2.Image = layer2Surface.Snapshot();
+            layer1Surface.Dispose();
+            layer2Surface.Dispose();
+        }
+
+        private void DrawPipette(SKCanvas sKCanvas)
+        {
+            layerViewModel.Screenshot = surfaceLayer.Snapshot();
+            if (canvasViewModel.ColorPipette != SKColors.Transparent)
+            {
+                SKPoint cursorPos = canvasViewModel.CursorPoint.ToSKPoint();
+                var r = (byte)(255 - canvasViewModel.ColorPipette.Red);
+                var g = (byte)(255 - canvasViewModel.ColorPipette.Green);
+                var b = (byte)(255 - canvasViewModel.ColorPipette.Blue);
+                var invertColor = new SKColor(r, g, b, 255);
+                using (var pipettePaint = new SKPaint
+                {
+                    Color = invertColor,
+                    StrokeWidth = Math.Max(2, Math.Min(10, 5 / (float)canvasViewModel.Scale)),
+                    Style = SKPaintStyle.Stroke
+                })
+                {
+                    sKCanvas.DrawCircle(cursorPos, 22, pipettePaint);
+                    sKCanvas.DrawCircle(cursorPos, 18, pipettePaint);
+                    pipettePaint.Color = canvasViewModel.ColorPipette;
+                    pipettePaint.StrokeWidth = 5;
+                    sKCanvas.DrawCircle(cursorPos, 20, pipettePaint);
+                }
+            }
         }
 
         private void DrawGrid(SKCanvas canvas, float width, float height, float spacing)
