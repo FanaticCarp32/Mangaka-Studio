@@ -31,7 +31,7 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
-        public Dictionary<ToolsType, DrawingTools> Tools { get; } = new();
+        public Dictionary<ToolsType, DrawingTools> Tools { get; set; } = new();
         
 
         public DrawingTools CurrentTool
@@ -55,8 +55,10 @@ namespace Mangaka_Studio.ViewModels
             canvas = canvas1;
             toolsFactory = toolsFactory1;
             CurrentTool = toolsFactory.CreateDrawTools(ToolsType.Pen);
+            var CurrentTool1 = toolsFactory.CreateDrawTools(ToolsType.Pipette);
             LastEraseToolsType = ToolsType.HardEraser;
             Tools.Add(ToolsType.Pen, CurrentTool);
+            Tools.Add(ToolsType.Pipette, CurrentTool1);
             canvas.CurrentTool = CurrentTool;
             SelectPenCommand = new RelayCommand(param => {
                 if (param is ToolsType toolsType)

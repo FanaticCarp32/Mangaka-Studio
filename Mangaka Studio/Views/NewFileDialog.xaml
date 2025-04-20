@@ -1,0 +1,68 @@
+﻿<Window x:Class="Mangaka_Studio.Views.NewFileDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mangaka_Studio.Views"
+        mc:Ignorable="d"
+        Title="Создание нового файла" Height="200" Width="300"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Border Background="{StaticResource MainGradient}" BorderBrush="Black" BorderThickness="2" CornerRadius="10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="1"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="1"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">Создать новый файл</TextBlock>
+            <Border Grid.Row="1" Style="{StaticResource BorderInner}"></Border>
+            <StackPanel Margin="3" Grid.Row="2" Orientation="Horizontal">
+                <TextBlock>Разрешение:</TextBlock>
+                <ComboBox Style="{StaticResource ModernComboBox}" Margin="5,0" x:Name="ResolutionComboBox" Width="150" SelectionChanged="ResolutionComboBox_SelectionChanged">
+                    <ComboBoxItem Content="420x595x   (A5 DPI=72)" Tag="420x595"></ComboBoxItem>
+                    <ComboBoxItem Content="874x1240x  (A5 DPI=150)" Tag="874x1240"></ComboBoxItem>
+                    <ComboBoxItem Content="1748x2480x (A5 DPI=300)" Tag="1748x2480"></ComboBoxItem>
+                    <ComboBoxItem Content="595x842x   (A4 DPI=72)" Tag="595x842"></ComboBoxItem>
+                    <ComboBoxItem Content="1240x1754x (A4 DPI=150)" Tag="1240x1754"></ComboBoxItem>
+                    <ComboBoxItem Content="2481x3507x (A4 DPI=300)" Tag="2481x3507"></ComboBoxItem>
+                    <ComboBoxItem Content="842x1191x  (A3 DPI=72)" Tag="1240x1754"></ComboBoxItem>
+                    <ComboBoxItem Content="1754x2481x (A3 DPI=150)" Tag="1754x2481"></ComboBoxItem>
+                    <ComboBoxItem Content="3508x4961x (A3 DPI=300)" Tag="3508x4961"></ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <Border Grid.Row="3" Style="{StaticResource BorderInner}"></Border>
+            <StackPanel Margin="3" Grid.Row="4" Orientation="Horizontal">
+                <CheckBox x:Name="CustomResolutionCheckBox" Style="{StaticResource VSMCheckBox}" Checked="CustomResolutionCheckBox_Checked" Unchecked="CustomResolutionCheckBox_Unchecked"></CheckBox>
+                <TextBlock Margin="3" VerticalAlignment="Center">Свой формат</TextBlock>
+            </StackPanel>
+            <StackPanel x:Name="ResolutionStackPanel" Visibility="Collapsed" Margin="3" Grid.Row="5" Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center">Ширина:</TextBlock>
+                <TextBox x:Name="WidthTextBox" Height="25" Width="50" Margin="5,0" Text="0" TextChanged="WidthTextBox_TextChanged" FontSize="12"></TextBox>
+                <TextBlock VerticalAlignment="Center">Высота:</TextBlock>
+                <TextBox x:Name="HeightTextBox" Height="25" Width="50" Margin="5,0" Text="0" TextChanged="HeightTextBox_TextChanged" FontSize="12"></TextBox>
+            </StackPanel>
+            <Grid Grid.Row="7">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"></ColumnDefinition>
+                    <ColumnDefinition Width="60"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="60"></ColumnDefinition>
+                    <ColumnDefinition Width="20"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="1" Style="{StaticResource PopUpButton}" Height="26" Margin="2,2,2,0" Click="Button_Click_1" VerticalAlignment="Top">Создать</Button>
+                <Border Grid.Column="2"></Border>
+                <Button Grid.Column="3" Style="{StaticResource PopUpButton}" Click="Button_Click">Отмена</Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

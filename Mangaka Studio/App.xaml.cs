@@ -36,6 +36,8 @@ namespace Mangaka_Studio
 
             serviceDescriptors.AddSingleton<LayerViewModel>();
 
+            serviceDescriptors.AddSingleton<FileViewModel>();
+
             serviceDescriptors.AddSingleton<MainViewModel>();
 
             serviceDescriptors.AddSingleton<MainWindow>();
