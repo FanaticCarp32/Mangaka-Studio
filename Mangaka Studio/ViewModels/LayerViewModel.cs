@@ -46,6 +46,7 @@ namespace Mangaka_Studio.ViewModels
 
         public SKImage Screenshot { get; set; }
         public SKSurface tempSurface { get; set; }
+        public bool NeedsRedraw { get; set; } = true;
 
         public ICommand AddLayerCommand { get; }
         public ICommand DeleteLayerCommand { get; }
@@ -71,7 +72,7 @@ namespace Mangaka_Studio.ViewModels
             {
                 Id = k,
                 Name = $"Слой {k}",
-                Surface = SKSurface.Create(new SKImageInfo((int)canvas.CanvasWidth, (int)canvas.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
+                Image = SKImage.Create(new SKImageInfo((int)canvas.CanvasWidth, (int)canvas.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
             };
             k++;
             Layers.Add(newLayer);
@@ -151,23 +152,23 @@ namespace Mangaka_Studio.ViewModels
             {
                 Id = layerModel.Id,
                 Name = layerModel.Name,
-                Surface = CloneSurface(layerModel.Surface),
+                Image = layerModel.Image,
                 IsVisible = layerModel.IsVisible,
                 Opacity = layerModel.Opacity
             };
         }
 
-        private SKSurface CloneSurface(SKSurface surface)
+        private SKImage CloneSurface(SKImage image)
         {
-            if (surface == null) return null;
+            if (image == null) return null;
 
-            SKImage snapshot = surface.Snapshot();
+            SKImage snapshot = image;
             SKSurface clonesurface = SKSurface.Create(snapshot.Info);
             using (SKCanvas canvas = clonesurface.Canvas)
             {
                 canvas.DrawImage(snapshot, 0, 0);
             }
-            return clonesurface;
+            return clonesurface.Snapshot();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

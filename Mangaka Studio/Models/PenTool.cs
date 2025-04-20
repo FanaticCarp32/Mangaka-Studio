@@ -31,9 +31,9 @@ namespace Mangaka_Studio.Models
         public override void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
         {
             _isDrawing = true;
-                
-            surface = SKSurface.Create(layerViewModel.SelectLayer.Surface.Snapshot().Info);
+            surface = SKSurface.Create(layerViewModel.SelectLayer.Image.Info);
             surface.Canvas.Clear(SKColors.Transparent);
+            canvasViewModel.EraserCursor = pos;
             ApplyPen(canvasViewModel, pos, colorPickerViewModel, layerViewModel);
         }
 
@@ -41,7 +41,25 @@ namespace Mangaka_Studio.Models
         {
             if (_isDrawing)
             {
+                canvasViewModel.EraserCursor = pos;
                 ApplyPen(canvasViewModel, pos, colorPickerViewModel, layerViewModel);
+            }
+        }
+
+        public override void OnMouseUp(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel)
+        {
+            if (_isDrawing)
+            {
+                var surface1 = SKSurface.Create(layerViewModel.SelectLayer.Image.Info);
+                surface1.Canvas.DrawImage(layerViewModel.SelectLayer.Image, 0, 0);
+                surface1.Canvas.DrawImage(surface.Snapshot(), 0, 0);
+                layerViewModel.SelectLayer.Image = surface1.Snapshot();
+                surface1.Dispose();
+                layerViewModel.tempSurface.Canvas.Clear();
+                layerViewModel.NeedsRedraw = true;
+                canvasViewModel.EraserCursor = null;
+                canvasViewModel.LastErasePoint = null;
+                _isDrawing = false;
             }
         }
 
@@ -131,20 +149,6 @@ namespace Mangaka_Studio.Models
 
             canvas.DrawCircle(center, radius, paint);
             return bitmap;
-        }
-
-
-        public override void OnMouseUp(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel)
-        {
-            if (_isDrawing)
-            {
-                layerViewModel.tempSurface = null;
-                layerViewModel.SelectLayer.Surface.Canvas.DrawSurface(surface, 0, 0);
-                surface = SKSurface.Create(layerViewModel.SelectLayer.Surface.Snapshot().Info);
-                surface.Canvas.Clear(SKColors.Transparent);
-                canvasViewModel.LastErasePoint = null;
-                _isDrawing = false;
-            }
         }
     }
 }

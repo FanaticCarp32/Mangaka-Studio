@@ -14,6 +14,7 @@ namespace Mangaka_Studio.Models
     {
         public override ToolsSettingsViewModel Settings { get; }
         private bool isErasing = false;
+        private SKSurface surface;
 
         public SoftEraser(ToolsSettingsViewModel settings)
         {
@@ -22,6 +23,11 @@ namespace Mangaka_Studio.Models
 
         public override void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
         {
+            surface = SKSurface.Create(layerViewModel.SelectLayer.Image.Info);
+            surface.Canvas.Clear(SKColors.Transparent);
+            surface.Canvas.DrawImage(layerViewModel.SelectLayer.Image, 0, 0);
+            layerViewModel.SelectLayer.Image = SKImage.Create(layerViewModel.SelectLayer.Image.Info);
+            layerViewModel.NeedsRedraw = true;
             canvasViewModel.EraserCursor = pos;
             isErasing = true;
             canvasViewModel.LastErasePoint = pos;
@@ -40,10 +46,19 @@ namespace Mangaka_Studio.Models
 
         public override void OnMouseUp(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel)
         {
-            isErasing = false;
-            canvasViewModel.EraserCursor = null;
-            canvasViewModel.LastErasePoint = null;
-            canvasViewModel.OnPropertyChanged(nameof(canvasViewModel.EraserCursor));
+            if (isErasing)
+            {
+                isErasing = false;
+                var surface1 = SKSurface.Create(layerViewModel.SelectLayer.Image.Info);
+                surface1.Canvas.DrawImage(surface.Snapshot(), 0, 0);
+                layerViewModel.SelectLayer.Image = surface1.Snapshot();
+                surface1.Dispose();
+                layerViewModel.tempSurface.Canvas.Clear();
+                layerViewModel.NeedsRedraw = true;
+                canvasViewModel.EraserCursor = null;
+                canvasViewModel.LastErasePoint = null;
+                //canvasViewModel.OnPropertyChanged(nameof(canvasViewModel.EraserCursor));
+            }
         }
 
         public override void ApplyEraser(CanvasViewModel canvasViewModel, SKPoint erasePoint, LayerViewModel layerViewModel)
@@ -66,9 +81,10 @@ namespace Mangaka_Studio.Models
             {
                 if (canvasViewModel.LastErasePoint.HasValue)
                 {
-                    layerViewModel.SelectLayer.Surface.Canvas.DrawLine(canvasViewModel.LastErasePoint.Value, erasePoint, paint);
+                    surface.Canvas.DrawLine(canvasViewModel.LastErasePoint.Value, erasePoint, paint);
                 }
             }
+            layerViewModel.tempSurface = surface;
             //layerViewModel.SelectLayer.Surface.Canvas.Flush();
         }
     }
