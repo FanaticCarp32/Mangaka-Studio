@@ -14,7 +14,8 @@ namespace Mangaka_Studio.ViewModels
 {
     public class LayerViewModel : INotifyPropertyChanged
     {
-        private int k = 0;
+        public int k { get; set; } = 0;
+        public bool IsModified { get; set; } = false;
         private int id = 0;
         private CanvasViewModel canvas;
         /*private Stack<(LayerModel Layer, SKImage Image)> undoStack = new Stack<(LayerModel Layer, SKImage Image)>();
@@ -57,6 +58,7 @@ namespace Mangaka_Studio.ViewModels
         public LayerViewModel(CanvasViewModel canvasViewModel)
         {
             canvas = canvasViewModel;
+            //Layers.CollectionChanged += (s, e) => IsModified = true;
             AddLayer();
             AddLayerCommand = new RelayCommand(_ => AddLayer());
             DeleteLayerCommand = new RelayCommand(_ => DeleteLayer());
@@ -65,18 +67,43 @@ namespace Mangaka_Studio.ViewModels
             RedoCommand = new RelayCommand(_ => Redo());
         }
 
+        public SKImage GetCompositedImage()
+        {
+            var surface = SKSurface.Create(new SKImageInfo((int)canvas.CanvasWidth, (int)canvas.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+            foreach (var layer in Layers)
+            {
+                surface.Canvas.DrawImage(layer.Image, 0, 0);
+            }
+            var image = surface.Snapshot();
+            surface.Dispose();
+            return image;
+        }
+
         private void AddLayer()
         {
             SaveState();
+            var id = GetNewIdLayer(false);
             var newLayer = new LayerModel
             {
-                Id = k,
-                Name = $"Слой {k}",
-                Image = SKImage.Create(new SKImageInfo((int)canvas.CanvasWidth, (int)canvas.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
+                Id = id,
+                Name = $"Слой {id}",
             };
-            k++;
+            var imageInfo = new SKImageInfo((int)canvas.CanvasWidth, (int)canvas.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using (var surface = SKSurface.Create(imageInfo))
+            {
+                surface.Canvas.Clear(SKColors.Transparent);
+                newLayer.Image = surface.Snapshot();
+                surface.Dispose();
+            }
             Layers.Add(newLayer);
             SelectLayer = newLayer;
+        }
+
+        public int GetNewIdLayer(bool reset)
+        {
+            if (reset) k = 0;
+            k++;
+            return k;
         }
 
         private void DeleteLayer()
@@ -88,7 +115,7 @@ namespace Mangaka_Studio.ViewModels
                 Layers.Remove(removeLayer);
                 SelectLayer = Layers.FirstOrDefault();
 
-                
+
                 OnPropertyChanged(nameof(SelectLayer));
             }
         }
@@ -101,7 +128,7 @@ namespace Mangaka_Studio.ViewModels
         public void SaveState()
         {
             if (SelectLayer != null) id = SelectLayer.Id;
-            
+
             //undoStack.Push((SelectLayer, SelectLayer.Surface.Snapshot()));
             ObservableCollection<LayerModel> newLayer = new ObservableCollection<LayerModel>(Layers.Select(layer => CloneLayer(layer)));
             undoStack.Push((newLayer, id));
@@ -140,7 +167,7 @@ namespace Mangaka_Studio.ViewModels
         private void UpdateLayers(ObservableCollection<LayerModel> layerModels)
         {
             Layers.Clear();
-            foreach (var layer in layerModels.Select(layer => CloneLayer(layer))) 
+            foreach (var layer in layerModels.Select(layer => CloneLayer(layer)))
             {
                 Layers.Add(layer);
             }
@@ -172,7 +199,10 @@ namespace Mangaka_Studio.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string propertyName) =>
+        public void OnPropertyChanged(string propertyName) 
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            IsModified = true;
+        }
     }
 }

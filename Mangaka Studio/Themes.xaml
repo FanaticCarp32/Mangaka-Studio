@@ -2,12 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Mangaka_Studio.Controls"
                     xmlns:services="clr-namespace:Mangaka_Studio.Services" 
-                    xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp">
+                    xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <services:ToolTypeConverter x:Key="ToolTypeConverter"></services:ToolTypeConverter>
     <services:SKColorToBrushConverter  x:Key="SKColorToBrushConverter"></services:SKColorToBrushConverter>
     <services:HueToColorConverter  x:Key="HueToColorConverter"></services:HueToColorConverter>
     <services:ColorStringToSKColorConverter x:Key="ColorStringToSKColorConverter"></services:ColorStringToSKColorConverter>
-
+    <system:Boolean x:Key="TrueValue">True</system:Boolean>
+    
     <!-- Цвета -->
     <Color x:Key="MainColorDark1">#4D4D4D</Color>
     <Color x:Key="MainColorDark2">#808080</Color>
@@ -145,7 +147,7 @@
     <!-- Стиль для CheckBox -->
     <Style x:Key="VSMCheckBox" TargetType="CheckBox">
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Background" Value="Gray"/>
+        <Setter Property="Background" Value="{StaticResource MainGradientDark}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
@@ -246,7 +248,6 @@
                             Margin="4"
                             Padding="4">
                         <DockPanel>
-                            <!-- Заголовок -->
                             <ToggleButton x:Name="ExpanderToggleButton"
                                           Content="{TemplateBinding Header}"
                                           Foreground="{TemplateBinding Foreground}"
@@ -299,7 +300,6 @@
                                 </ToggleButton.Style>
                             </ToggleButton>
 
-                            <!-- Контент -->
                             <ContentPresenter x:Name="Content" Visibility="Collapsed" DockPanel.Dock="Bottom"/>
                         </DockPanel>
                     </Border>
@@ -313,7 +313,144 @@
         </Setter>
     </Style>
     
-    <!-- Стиль ScrollViewer -->
+    <!-- Стиль для ComboBox-->
+    <Style x:Key="ModernComboBox" TargetType="ComboBox">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+                        <Grid>
+                            <ToggleButton x:Name="ExpanderToggleButton"
+                                      Content="{TemplateBinding SelectionBoxItem}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      FontWeight="Bold"
+                                      Background="{StaticResource MainGradientDark}"
+                                      BorderBrush="Black"
+                                      BorderThickness="1"
+                                      Padding="6,3"
+                                      Cursor="Hand"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Grid>
+                                                        <Border Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                            CornerRadius="4">
+                                                            
+                                                            <Border.Effect>
+                                                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                                                            </Border.Effect>
+                                                        </Border>
+                                                        <StackPanel>
+                                                            <ContentPresenter TextBlock.FontFamily="Segoe UI"
+                                                                  HorizontalAlignment="Left" TextBlock.FontWeight="Light"
+                                                                  VerticalAlignment="Center" Margin="5,0"/>
+                                                        </StackPanel>
+                                                        <Path x:Name="Arrow"
+                                                          Data="M 0 0 L 4 4 L 8 0"
+                                                          HorizontalAlignment="Right"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,6,0"
+                                                          Stroke="White"
+                                                          StrokeThickness="2"
+                                                          RenderTransformOrigin="0.5,0.5">
+                                                            <Path.RenderTransform>
+                                                                <RotateTransform Angle="0"/>
+                                                            </Path.RenderTransform>
+                                                        </Path>
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter TargetName="Arrow" Property="RenderTransform">
+                                                                <Setter.Value>
+                                                                    <RotateTransform Angle="180"/>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+
+                            <Popup x:Name="DropDownPopup"
+                               Placement="Bottom"
+                               IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                               AllowsTransparency="True">
+                                <Border Background="{StaticResource MainGradient}"
+                                    BorderBrush="Black"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="4">
+                                    <ScrollViewer>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Стиль для ComboBoxItem -->
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="{StaticResource MainGradientDark}"></Setter>
+        <Setter Property="Foreground" Value="White"></Setter>
+        <Setter Property="FontSize" Value="12"></Setter>
+        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="BorderThickness" Value="0"></Setter>
+        <Setter Property="Cursor" Value="Hand"></Setter>
+        <Setter Property="Margin" Value="5,3"></Setter>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Grid>
+                        <Border CornerRadius="5" x:Name="InnerBorder" Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="1" Margin="0">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+                        <Border CornerRadius="5" x:Name="OuterBorder" Background="Transparent" BorderBrush="Transparent" BorderThickness="2" Margin="-3">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal">
+                            <ContentPresenter Margin="5,0,5,3" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" 
+                            Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- Стиль для ScrollViewer -->
     <Style TargetType="ScrollViewer">
         <Setter Property="Template">
             <Setter.Value>
@@ -325,7 +462,52 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <!-- Стиль для TextBox -->
+    <Style TargetType="TextBox">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="{StaticResource MainGradientDark}" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <Border CornerRadius="5" x:Name="InnerBorder" Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="1" Margin="3">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+                        <Border CornerRadius="5" x:Name="OuterBorder" Background="Transparent" BorderBrush="Transparent" BorderThickness="2" Margin="0">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+                        <StackPanel>
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Stretch"
+                                          Margin="2,0,2,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="White"></Setter>
+                            <Setter Property="Cursor" Value="Hand"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Background" Value="{StaticResource MainGradientLight}"></Setter>
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Шаблон для твердого ластика -->
     <DataTemplate x:Key="EraserHardToolTemplate">
         <StackPanel>
@@ -380,59 +562,60 @@
 EraserSoftToolTemplate="{StaticResource EraserSoftToolTemplate}"></local:ToolEraseTemplateSelector>
 
     <!-- Стиль для кнопки -->
-    <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="#4CAF50"/>
+    <Style x:Key="MenuButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Padding" Value="8,4"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect BlurRadius="8" Color="#999" ShadowDepth="2"/>
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#45A049"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#388E3C"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                    <Grid>
+                        <Border CornerRadius="5" x:Name="InnerBorder" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="0" Margin="0"></Border>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <ContentPresenter Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center"></ContentPresenter>
+                        </StackPanel>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+    
+    <Style x:Key="PopUpButton" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource MainGradientDark}"></Setter>
+        <Setter Property="Foreground" Value="White"></Setter>
+        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="Cursor" Value="Hand"></Setter>
+        <Setter Property="Margin" Value="2"></Setter>
+        <Setter Property="Padding" Value="2"></Setter>
 
-    <!-- Стиль для кнопки удаления -->
-    <Style x:Key="DangerButtonStyle" BasedOn="{StaticResource PrimaryButtonStyle}" TargetType="Button">
-        <Setter Property="Background" Value="#F44336"/>
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect BlurRadius="8" Color="#FFAAAA" ShadowDepth="2"/>
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
+                    <Grid>
+                        <Border CornerRadius="5" x:Name="InnerBorder" Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="1" Margin="0">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+                        <Border CornerRadius="5" x:Name="OuterBorder" Background="Transparent" BorderBrush="Transparent" BorderThickness="2" Margin="-3">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <ContentPresenter Margin="3,3,3,3" VerticalAlignment="Center" HorizontalAlignment="Center" Cursor=""></ContentPresenter>
+                        </StackPanel>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#E53935"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="White"></Setter>
+                            <Setter Property="Cursor" Value="Hand"></Setter>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#D32F2F"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="Black"></Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -450,7 +633,6 @@ EraserSoftToolTemplate="{StaticResource EraserSoftToolTemplate}"></local:ToolEra
 
     <!-- Стиль для ListBoxItem -->
     <Style x:Key="LayerListBoxItem" TargetType="ListBoxItem">
-        <!-- Основные стили по умолчанию -->
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -470,17 +652,15 @@ EraserSoftToolTemplate="{StaticResource EraserSoftToolTemplate}"></local:ToolEra
                             <ContentPresenter/>
                         </Border>
                     </Grid>
-                    
-                    
+
+
                     <ControlTemplate.Triggers>
-                        <!-- Наведение (MouseOver) -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource MainGradientDark}"/>
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MainColor}"/>
                             <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
                         </Trigger>
 
-                        <!-- Выбор (IsSelected) -->
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource MainGradient}"/>
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MainColor}"/>
@@ -629,6 +809,7 @@ EraserSoftToolTemplate="{StaticResource EraserSoftToolTemplate}"></local:ToolEra
             <StackPanel Orientation="Horizontal">
                 <Slider Style="{StaticResource AllSlider}" Margin="5" Width="100" Minimum="1" Maximum="50" Value="{Binding StrokeWidth, Mode=TwoWay}"></Slider>
                 <TextBlock Style="{StaticResource MainFont}" Text="{Binding StrokeWidth, StringFormat={}{0:0}}"></TextBlock>
+                <TextBlock Style="{StaticResource MainFont}" Text="px"></TextBlock>
             </StackPanel>
             <Border Style="{StaticResource BorderInner}"></Border>
             <TextBlock Margin="5" Style="{StaticResource MainFont}" Text="Прозрачность:" Foreground="Black"></TextBlock>
@@ -830,23 +1011,21 @@ EraserToolTemplate="{StaticResource EraserToolTemplate}"></local:ToolTemplateSel
             <Setter.Value>
                 <ControlTemplate TargetType="MenuItem">
                     <Grid>
-                        <!-- Основной фон кнопки -->
-                        <Border x:Name="Border"
-                            Background="{TemplateBinding Background}"
-                            Padding="5" CornerRadius="5" BorderBrush="Black" BorderThickness="1">
+                        <Border CornerRadius="5" x:Name="InnerBorder" Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="1" Margin="0">
                             <Border.Effect>
-                                <DropShadowEffect Color="Black" 
-                                              BlurRadius="4" 
-                                              ShadowDepth="2"/>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
+                        <Border CornerRadius="5" x:Name="OuterBorder" Background="Transparent" BorderBrush="Transparent" BorderThickness="2" Margin="-3">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
                             </Border.Effect>
                         </Border>
 
-                        <!-- Контент кнопки -->
                         <StackPanel Orientation="Horizontal">
                             <ContentPresenter Margin="5,0,5,3" ContentSource="Header" HorizontalAlignment="Center"/>
                         </StackPanel>
 
-                        <!-- Подменю -->
                         <Popup x:Name="SubMenuPopup"
                            Placement="Bottom"
                            AllowsTransparency="True"
@@ -864,16 +1043,14 @@ EraserToolTemplate="{StaticResource EraserToolTemplate}"></local:ToolTemplateSel
                     </Grid>
 
                     <ControlTemplate.Triggers>
-                        <!-- Наведение -->
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="Background" 
-                                Value="{StaticResource MainGradientInverse}"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" 
+                                Value="White"/>
                         </Trigger>
 
-                        <!-- Подменю открыто -->
                         <Trigger Property="IsSubmenuOpen" Value="True">
-                            <Setter TargetName="Border" Property="Background" 
-                                Value="{StaticResource MainGradientDark}"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" 
+                                Value="Black"/>
                             <Setter TargetName="SubMenuPopup" Property="IsOpen" Value="True"/>
                         </Trigger>
                     </ControlTemplate.Triggers>

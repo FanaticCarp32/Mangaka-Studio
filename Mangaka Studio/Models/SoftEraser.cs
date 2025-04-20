@@ -12,7 +12,7 @@ namespace Mangaka_Studio.Models
 {
     class SoftEraser : EraserTool
     {
-        public override ToolsSettingsViewModel Settings { get; }
+        public override ToolsSettingsViewModel Settings { get; set; }
         private bool isErasing = false;
         private SKSurface surface;
 
@@ -23,6 +23,7 @@ namespace Mangaka_Studio.Models
 
         public override void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
         {
+            layerViewModel.IsModified = true;
             surface = SKSurface.Create(layerViewModel.SelectLayer.Image.Info);
             surface.Canvas.Clear(SKColors.Transparent);
             surface.Canvas.DrawImage(layerViewModel.SelectLayer.Image, 0, 0);

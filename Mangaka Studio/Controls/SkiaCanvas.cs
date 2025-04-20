@@ -26,8 +26,6 @@ namespace Mangaka_Studio.Controls
 
         public SkiaCanvas()
         {
-            this.canvasViewModel = new CanvasViewModel();
-            this.layerViewModel = new LayerViewModel(canvasViewModel);
         }
 
         public SkiaCanvas(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel)
@@ -38,18 +36,24 @@ namespace Mangaka_Studio.Controls
             {
                 Id = -1,
                 Name = "",
-                Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
+                //Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul))
             };
             layer2 = new LayerModel
             {
                 Id = -2,
                 Name = "",
-                Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul))
+                //Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul))
             };
-            //layer1.Surface.Canvas.Clear(SKColors.Transparent);
-            //layer2.Surface.Canvas.Clear(SKColors.Transparent);
-            //surfaceLayer?.Dispose();
-            surfaceLayer = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul));
+            var imageInfo = new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using (var surface = SKSurface.Create(imageInfo))
+            {
+                surface.Canvas.Clear(SKColors.Transparent);
+                layer1.Image = surface.Snapshot();
+                layer2.Image = surface.Snapshot();
+                surface.Dispose();
+            }
+            surfaceLayer = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+            surfaceLayer.Canvas.Clear(SKColors.Transparent);
             this.PaintSurface += OnPaintSurface;
             this.canvasViewModel.PropertyChanged += CanvasViewModel_PropertyChanged;
             this.layerViewModel.PropertyChanged += LayerViewModel_PropertyChanged;
@@ -78,7 +82,7 @@ namespace Mangaka_Studio.Controls
             canvas.Translate(new SKPoint((float)canvasViewModel.OffsetX, (float)canvasViewModel.OffsetY));
             canvas.ClipRect(new SKRect(0, 0, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight));
 
-            using (var bgPaint = new SKPaint { Color = SKColors.White })
+            using (var bgPaint = new SKPaint { Color = SKColors.White, IsAntialias = true })
             {
                 canvas.DrawRect(new SKRect(0, 0, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight), bgPaint);
             }
@@ -125,13 +129,26 @@ namespace Mangaka_Studio.Controls
                     canvas.DrawCircle(cursorPos, canvasViewModel.CurrentTool.Settings.StrokeWidth / 2, eraserPaint);
                 }
             }
-
-            DrawGrid(canvas, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight, 50);
+            if (canvasViewModel.IsGrid)
+                DrawGrid(canvas, canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight, canvasViewModel.GridSize);
         }
 
         private void RebuildLayers()
         {
             layerViewModel.NeedsRedraw = true;
+            surfaceLayer.Canvas.Clear(SKColors.Transparent);
+            surfaceLayer = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+            surfaceLayer.Canvas.Clear(SKColors.Transparent);
+            var imageInfo = new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using (var surface = SKSurface.Create(imageInfo))
+            {
+                surface.Canvas.Clear(SKColors.Transparent);
+                layer1.Image = surface.Snapshot();
+                layer2.Image = surface.Snapshot();
+                surface.Dispose();
+            }
+            //layer1.Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+            //layer2.Image = SKImage.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
             var layer1Surface = SKSurface.Create(layer1.Image.Info);
             var layer2Surface = SKSurface.Create(layer1.Image.Info);
             layer1Surface.Canvas.Clear(SKColors.Transparent);

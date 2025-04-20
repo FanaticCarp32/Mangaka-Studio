@@ -14,6 +14,7 @@ using Mangaka_Studio.Controls;
 using Mangaka_Studio.Models;
 using Mangaka_Studio.Services;
 using Mangaka_Studio.ViewModels;
+using Mangaka_Studio.Views;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 
@@ -27,6 +28,7 @@ namespace Mangaka_Studio
         CanvasViewModel canvas;
         ColorPickerViewModel color;
         LayerViewModel layer;
+        FileViewModel file;
         SKPoint lastPos = new SKPoint(0, 0);
         bool flag = false;
         bool isEdit = false;
@@ -35,13 +37,14 @@ namespace Mangaka_Studio
         LayerModel draggedItem;
         SkiaCanvas skiaCanvas;
 
-        public MainWindow(CanvasViewModel canvas1, MainViewModel mainViewModel, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
+        public MainWindow(CanvasViewModel canvas1, MainViewModel mainViewModel, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel, FileViewModel fileViewModel)
         {
             InitializeComponent();
             
             canvas = canvas1;
             color = colorPickerViewModel;
             layer = layerViewModel;
+            file = fileViewModel;
             DataContext = mainViewModel;
             if (DataContext == null)
                 MessageBox.Show("DataContext не установлен!");
@@ -360,6 +363,53 @@ namespace Mangaka_Studio
                 current = VisualTreeHelper.GetParent(current);
             }
             return false;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (layer.IsModified) // Проверяем флаг изменений
+            {
+                var result = MessageBox.Show(
+                    "Файл содержит несохраненные изменения. Хотите сохранить их?",
+                    "Подтверждение",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    file.SaveFile("false"); // Сохраняем изменения
+                }
+                else if (result == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true; // Отменяем закрытие окна
+                }
+            }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (layer.IsModified)
+            {
+                var result = MessageBox.Show(
+                    "Файл содержит несохраненные изменения. Хотите сохранить их?",
+                    "Подтверждение",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    file.SaveFile("false"); // Сохраняем текущие изменения
+                }
+                else if (result == MessageBoxResult.Cancel)
+                {
+                    return; // Отменяем операцию
+                }
+            }
+            var dialog = new NewFileDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                file.NewFile(dialog.width, dialog.height);
+            }
         }
     }
 }

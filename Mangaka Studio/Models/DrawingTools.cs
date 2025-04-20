@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Mangaka_Studio.ViewModels;
 using SkiaSharp;
+using System.Text.Json.Serialization;
 
 namespace Mangaka_Studio.Models
 {
     public abstract class DrawingTools
     {
-        public virtual ToolsSettingsViewModel Settings { get; }
+        public virtual ToolsSettingsViewModel Settings { get; set; }
         public abstract void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel);
         public abstract void OnMouseUp(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel);
         public abstract void OnMouseMove(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel);

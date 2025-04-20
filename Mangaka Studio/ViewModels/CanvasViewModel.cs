@@ -32,11 +32,31 @@ namespace Mangaka_Studio.ViewModels
         private bool isScale = false;
         private SKPoint? eraserCursor;
         private MatrixTransform matrixTransform = new MatrixTransform(Matrix.Identity);
-        public float CanvasWidth { get; set; } = 1000;
-        public float CanvasHeight { get; set; } = 600;
         public float EraserSize { get; set; } = 20f;
         public double ScaleMax { get; set; } = 10.0;
         public double ScaleMin { get; set; } = 0.3;
+
+        private int canvasWidth = 1000;
+        public int CanvasWidth
+        {
+            get => canvasWidth;
+            set
+            {
+                canvasWidth = value;
+                OnPropertyChanged(nameof(CanvasWidth));
+            }
+        }
+
+        private int canvasHeight = 600;
+        public int CanvasHeight
+        {
+            get => canvasHeight;
+            set
+            {
+                canvasHeight = value;
+                OnPropertyChanged(nameof(CanvasHeight));
+            }
+        }
 
         private SKSurface surface;
         public SKSurface Surface
@@ -68,7 +88,6 @@ namespace Mangaka_Studio.ViewModels
                 OnPropertyChanged(nameof(CanvasMatrix));
             }
         }
-        public List<SKPoint> StrokePoints { get; } = new();
 
         public SKPoint? LastErasePoint { get; set; } = null;
         public double ActualWidth { get; set; } = 0;
@@ -159,9 +178,51 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
+        private string isGridText = "Показать";
+        public string IsGridText
+        {
+            get => isGridText;
+            set
+            {
+                isGridText = value;
+                OnPropertyChanged(nameof(IsGridText));
+            }
+        }
+
+        private bool isGrid = false;
+        public bool IsGrid
+        {
+            get => isGrid;
+            set
+            {
+                isGrid = value;
+                if (isGrid)
+                {
+                    IsGridText = "Скрыть";
+                }
+                else
+                {
+                    IsGridText = "Показать";
+                }
+                OnPropertyChanged(nameof(IsGrid));
+            }
+        }
+
+        private int gridSize = 50;
+        public int GridSize
+        {
+            get => gridSize;
+            set
+            {
+                gridSize = value;
+                OnPropertyChanged(nameof(GridSize));
+            }
+        }
+
         public ICommand ZoomCommand { get; }
         public ICommand PanCommand { get; }
         public ICommand ResetCommand { get; }
+        public ICommand GridCommand { get; }
 
         public CanvasViewModel()
         {
@@ -185,7 +246,7 @@ namespace Mangaka_Studio.ViewModels
                 OffsetY += movement.Y;
             });
 
-            ResetCommand = new RelayCommand(param =>
+            ResetCommand = new RelayCommand(_ =>
             {
                 Scale = 1;
                 ScalePos = new SKPoint(CanvasWidth / 2, CanvasHeight / 2);
@@ -193,6 +254,7 @@ namespace Mangaka_Studio.ViewModels
                 OffsetX = 0;
                 OffsetY = 0;
             });
+            GridCommand = new RelayCommand(_ => IsGrid = !IsGrid);
         }
 
         public void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)

@@ -12,13 +12,15 @@ namespace Mangaka_Studio.ViewModels
         public ToolsViewModel ToolsVM { get; }
         public ColorPickerViewModel ColorVM { get; }
         public LayerViewModel LayerVM { get; }
+        public FileViewModel FileVM { get; }
 
-        public MainViewModel(CanvasViewModel canvasVM, ToolsViewModel toolsVM, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
+        public MainViewModel(CanvasViewModel canvasVM, ToolsViewModel toolsVM, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel, FileViewModel fileViewModel)
         {
             CanvasVM = canvasVM;
             ToolsVM = toolsVM;
             ColorVM = colorPickerViewModel;
             LayerVM = layerViewModel;
+            FileVM = fileViewModel;
         }
     }
 }

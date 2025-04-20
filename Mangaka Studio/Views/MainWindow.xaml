@@ -12,27 +12,36 @@
         WindowState="Maximized"
         Background="Transparent"
         Deactivated="Window_Deactivated"
-        PreviewMouseDown="Window_PreviewMouseDown">
+        PreviewMouseDown="Window_PreviewMouseDown"
+        Closing="Window_Closing">
     <Window.InputBindings>
         <KeyBinding Modifiers="Ctrl" Key="Z" Command="{Binding LayerVM.UndoCommand}"></KeyBinding>
-        <KeyBinding Modifiers="Ctrl+Shift" Key="Z" Command="{Binding LayerVM.RedoCommand}"></KeyBinding> 
+        <KeyBinding Modifiers="Ctrl+Shift" Key="Z" Command="{Binding LayerVM.RedoCommand}"></KeyBinding>
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding FileVM.SaveCommand}" CommandParameter="false"></KeyBinding> 
     </Window.InputBindings>
     <DockPanel Cursor="">
         <StackPanel Background="{StaticResource MainGradientInverse}" DockPanel.Dock="Top">
             <Menu Cursor="Hand">
-                <MenuItem Header="Файл" Cursor="Hand">
-                    <MenuItem Header="Создать"></MenuItem>
-                    <MenuItem Header="Открыть"></MenuItem>
-                    <MenuItem Header="Сохранить"></MenuItem>
+                <MenuItem DataContext="{Binding FileVM}" Header="Файл" Cursor="Hand">
+                    <MenuItem Header="Создать" Click="MenuItem_Click"></MenuItem>
+                    <MenuItem Header="Открыть" Command="{Binding OpenCommand}"></MenuItem>
+                    <MenuItem Header="Сохранить" Command="{Binding SaveCommand}" CommandParameter="false"></MenuItem>
+                    <MenuItem Header="Сохранить как" Command="{Binding SaveCommand}" CommandParameter="true"></MenuItem>
                 </MenuItem>
                 <MenuItem DataContext="{Binding LayerVM}" Header="Правка">
                     <MenuItem Header="Назад" Command="{Binding UndoCommand}"></MenuItem>
                     <MenuItem Header="Вперед" Command="{Binding RedoCommand}"></MenuItem>
-                    <MenuItem Header="Вперед" Command="{Binding RedoCommand}"></MenuItem>
                 </MenuItem>
                 <MenuItem DataContext="{Binding CanvasVM}" Header="Вид" Cursor="Hand">
                     <MenuItem Header="Сетка">
-                        <MenuItem Header="Сетка1" Command=""></MenuItem>
+                        <MenuItem Header="{Binding IsGridText}" IsCheckable="True" IsChecked="{Binding IsGrid, Mode=TwoWay}"></MenuItem>
+                        <MenuItem Header="Размер сетки">
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <TextBox Height="25" Width="60" Text="{Binding GridSize, Mode=TwoWay}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+                                <TextBlock VerticalAlignment="Center" Margin="3">px</TextBlock>
+                                <Button Style="{StaticResource MenuButtonStyle}"></Button>
+                            </StackPanel>
+                        </MenuItem>
                     </MenuItem>
                 </MenuItem>
             </Menu>
@@ -195,9 +204,40 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <WrapPanel Grid.Row="0" Style="{StaticResource ToolsParametr}" DataContext="{Binding CanvasVM}">
-                
-            </WrapPanel>
+            <Grid Grid.Row="0" DataContext="{Binding CanvasVM}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="1"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="1"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Expander Grid.Row="0" Style="{StaticResource ModernExpander}" IsExpanded="False" Header="Шаблоны">
+                        <StackPanel DataContext="{Binding DataContext.ToolsVM, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Cursor="">
+                            <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}">Шаблон 1</local:IconRadioButton>
+                            <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}">Шаблон 2</local:IconRadioButton>
+                        </StackPanel>
+                    </Expander>
+                    <Border Grid.Row="1" Style="{StaticResource BorderInner}"></Border>
+                    <Expander Grid.Row="2" Style="{StaticResource ModernExpander}" IsExpanded="False" Header="Раскадровки">
+                        <StackPanel DataContext="{Binding DataContext.ToolsVM, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Cursor="">
+                            <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}">Раскадровка 1</local:IconRadioButton>
+                            <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}">Раскадровка 2</local:IconRadioButton>
+                        </StackPanel>
+                    </Expander>
+                    <Border Grid.Row="3" Style="{StaticResource BorderInner}"></Border>
+                    <Expander Grid.Row="4" Style="{StaticResource ModernExpander}" IsExpanded="False" Header="Эффекты">
+                        <StackPanel DataContext="{Binding DataContext.ToolsVM, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Cursor="">
+                            <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}">Эффект 1</local:IconRadioButton>
+                            <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}">Эффект 2</local:IconRadioButton>
+                        </StackPanel>
+                    </Expander>
+                </Grid>
+            </Grid>
             <Border Grid.Row="1" Style="{StaticResource BorderInner}"></Border>
             <Grid Grid.Row="2" Background="{StaticResource MainColorGrid}" DataContext="{Binding LayerVM}" Margin="10" Cursor="">
                 <Grid.RowDefinitions>
