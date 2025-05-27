@@ -1,5 +1,4 @@
-﻿using Mangaka_Studio.Services;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,21 +14,8 @@ namespace Mangaka_Studio.Models
         public string ImageBase64 { get; set; }
         public bool IsVisible { get; set; }
         public float Opacity { get; set; }
+        public List<TextModel> ListText { get; set; }
+        public List<TemplateModel> ListTemplate { get; set; }
     }
-    public class ProjectData
-    {
-        public List<LayerSerializable> Layers { get; set; }
-        public int CanvasWidth { get; set; }
-        public int CanvasHeight { get; set; }
-        public double Scale { get; set; }
-        public SKPoint ScalePos { get; set; }
-        public double OffsetX { get; set; }
-        public double OffsetY { get; set; }
-        public double Rotate { get; set; }
-        public bool IsGrid { get; set; }
-        public int GridSize { get; set; }
-        public DrawingTools CurrentTool { get; set; }
-        public ToolsType LastEraseToolsType { get; set; }
-        public Dictionary<ToolsType, DrawingTools> Tools { get; set; }
-    }
+    
 }

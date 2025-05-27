@@ -11,7 +11,7 @@ namespace Mangaka_Studio.ViewModels
     public abstract class ToolsSettingsViewModel : INotifyPropertyChanged
     {
         private float strokeWidth = 20f;
-        public float StrokeWidth
+        public virtual float StrokeWidth
         {
             get => strokeWidth;
             set
@@ -21,7 +21,7 @@ namespace Mangaka_Studio.ViewModels
             }
         }
         private SKColor strokeColor = SKColors.Black;
-        public SKColor StrokeColor
+        public virtual SKColor StrokeColor
         {
             get => strokeColor;
             set
@@ -32,7 +32,7 @@ namespace Mangaka_Studio.ViewModels
         }
 
         private SKColor strokeColor1 = SKColors.Black;
-        public SKColor StrokeColor1
+        public virtual SKColor StrokeColor1
         {
             get => strokeColor1;
             set

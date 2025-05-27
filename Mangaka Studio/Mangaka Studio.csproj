@@ -13,12 +13,29 @@
   <ItemGroup>
     <None Remove="Resources\icons8-карандаш.png" />
     <None Remove="Resources\icons8-ластик.png" />
+    <None Remove="Resources\icons8-настройки.png" />
     <None Remove="Resources\icons8-пипетка.png" />
+    <None Remove="Resources\icons8-прямоугольная.png" />
     <None Remove="Resources\soft-eraser.png" />
+    <None Remove="Resources\Templates\BubbleTransparent2.png" />
+    <None Remove="Resources\Templates\BubbleTransparent3.png" />
+    <None Remove="Resources\Templates\BubbleTransparent4.png" />
+    <None Remove="Resources\Templates\BubbleTransparent5.png" />
+    <None Remove="Resources\Templates\BubbleTransparent6.png" />
+    <None Remove="Resources\Templates\BubbleTransparent7.png" />
+    <None Remove="Resources\Templates\BubbleTransparent8.png" />
+    <None Remove="Resources\Templates\BubbleTransparent9.png" />
+    <None Remove="Resources\Templates\Effects\полутон.png" />
   </ItemGroup>
 
   <ItemGroup>
+	<InternalsVisibleTo Include="Mangaka_Studio_Test" />
+  </ItemGroup>
+
+	<ItemGroup>
     <Content Include="Resources\09937cff-bec9-4632-adb8-109a03fe1a26.ico" />
+    <Resource Include="Resources\icon-текст.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent1.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,10 +55,30 @@
     <Resource Include="Resources\icons8-карандаш.png" />
     <Resource Include="Resources\icons8-кисть.png" />
     <Resource Include="Resources\icons8-ластик.png" />
+    <Resource Include="Resources\icons8-настройки.png" />
     <Resource Include="Resources\icons8-пипетка.png" />
+    <Resource Include="Resources\icons8-ломанная.png" />
+    <Resource Include="Resources\icons8-прямоугольная.png" />
     <Resource Include="Resources\icons8-ручка.png" />
     <Resource Include="Resources\hard-eraser.png" />
     <Resource Include="Resources\soft-eraser.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent2.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent3.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent4.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent5.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent6.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent7.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent8.png" />
+    <Resource Include="Resources\Templates\Bubbles\BubbleTransparent9.png" />
+    <Resource Include="Resources\Templates\Effects\Effects1.png" />
+    <Resource Include="Resources\Templates\Effects\Effects2.png" />
+    <Resource Include="Resources\Templates\Effects\Effects3.png" />
+    <Resource Include="Resources\Templates\Effects\полутон.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

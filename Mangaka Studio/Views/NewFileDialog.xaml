@@ -8,8 +8,8 @@
         Title="Создание нового файла" Height="200" Width="300"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent">
-    <Border Background="{StaticResource MainGradient}" BorderBrush="Black" BorderThickness="2" CornerRadius="10">
-        <Grid>
+    <Border Background="{StaticResource BrushMedium}" BorderBrush="Black" BorderThickness="2" CornerRadius="10">
+        <Grid Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -40,7 +40,6 @@
                     <ComboBoxItem Content="3508x4961x (A3 DPI=300)" Tag="3508x4961"></ComboBoxItem>
                 </ComboBox>
             </StackPanel>
-            <Border Grid.Row="3" Style="{StaticResource BorderInner}"></Border>
             <StackPanel Margin="3" Grid.Row="4" Orientation="Horizontal">
                 <CheckBox x:Name="CustomResolutionCheckBox" Style="{StaticResource VSMCheckBox}" Checked="CustomResolutionCheckBox_Checked" Unchecked="CustomResolutionCheckBox_Unchecked"></CheckBox>
                 <TextBlock Margin="3" VerticalAlignment="Center">Свой формат</TextBlock>

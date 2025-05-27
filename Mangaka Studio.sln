@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangaka Studio", "Mangaka Studio\Mangaka Studio.csproj", "{941044E0-3DD6-4AE9-8155-D6F24B0AE768}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mangaka_Studio_Test", "Mangaka_Studio_Test\Mangaka_Studio_Test.csproj", "{4F54548C-52D7-42E0-8224-BAAE43CB1E73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{941044E0-3DD6-4AE9-8155-D6F24B0AE768}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{941044E0-3DD6-4AE9-8155-D6F24B0AE768}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{941044E0-3DD6-4AE9-8155-D6F24B0AE768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F54548C-52D7-42E0-8224-BAAE43CB1E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F54548C-52D7-42E0-8224-BAAE43CB1E73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F54548C-52D7-42E0-8224-BAAE43CB1E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F54548C-52D7-42E0-8224-BAAE43CB1E73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {737929A4-AA9A-4FB4-814F-574626D27A2F}
 	EndGlobalSection
 EndGlobal

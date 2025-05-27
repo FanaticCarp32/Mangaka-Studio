@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Mangaka_Studio.Models.DrawingTools">
+    <Position X="6.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAoAAAAAACAAA=</HashCode>
+      <FileName>Models\DrawingTools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.EraserTool">
+    <Position X="8.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\EraserTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.HardEraser">
+    <Position X="7" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABQAAEAAABAAAAAAoAAAAAACAAA=</HashCode>
+      <FileName>Models\HardEraser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.LayerModel" Collapsed="true">
+    <Position X="9" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACEAAAAAAAEAAAAAAAAAQAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\LayerModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.LayerSerializable" Collapsed="true">
+    <Position X="12.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACEAAAAAAAEAAAAAAAAAQAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Models\LayerSerializable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.ProjectData" Collapsed="true">
+    <Position X="14.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAgAAAAAAEAIAIAAAAAEAAAAADGQAAAAIIAAAA=</HashCode>
+      <FileName>Models\LayerSerializable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.PenTool">
+    <Position X="5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAQAAAAAgBACAAAAoAAAAAACAAA=</HashCode>
+      <FileName>Models\PenTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.PipetteTool">
+    <Position X="5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAABAAAAAAIAAAAgAAAAA=</HashCode>
+      <FileName>Models\PipetteTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.SoftEraser">
+    <Position X="10" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABQAAEAAABAAAAAAoAAAAAACAAA=</HashCode>
+      <FileName>Models\SoftEraser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Services.ToolsFactory" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Services\ToolsFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.CanvasViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAgMIEQIiEAHAIAYRAACOkxEABAPKpgADJoMKAAA=</HashCode>
+      <FileName>ViewModels\CanvasViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ColorPickerViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GIMSMQgBMAAAAgAAIAYAAxAGgAAAQKCQBACgvxSBAgU=</HashCode>
+      <FileName>ViewModels\ColorPickerViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.EraserHardToolSettingsViewModel">
+    <Position X="0.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\EraserHardToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.EraserSoftToolSettingsViewModel">
+    <Position X="2.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAEAAEABAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\EraserSoftToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.EraserToolSettingsViewModel">
+    <Position X="0.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAACAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\EraserToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.FileViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAoIAAAAAIgEAIAMAABAAAAgAGAAA=</HashCode>
+      <FileName>ViewModels\FileViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.LayerViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAFAAAAAAAAREABIAkAAAADgIAgIkGEgAAgBDEgAgA=</HashCode>
+      <FileName>ViewModels\LayerViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.MainViewModel" Collapsed="true">
+    <Position X="10.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ECAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAEAACAAAA=</HashCode>
+      <FileName>ViewModels\MainViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.PenToolSettingsViewModel">
+    <Position X="2.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QABAAEAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\PenToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ToolsSettingsViewModel">
+    <Position X="1.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACBIAAAAAAAgAAAAAAAAAAAAAAAAIE=</HashCode>
+      <FileName>ViewModels\ToolsSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ToolsViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAEAIAAAAAACgAAAAAgAwAAAACCAAAA=</HashCode>
+      <FileName>ViewModels\ToolsViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.MainWindow" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IACARQgEAAAAQAIAAJgAAwACACAACAGATEgADAEADAM=</HashCode>
+      <FileName>Views\MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Views.NewFileDialog" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAIBAAQAQAAAAAEAAAAAAAIAEAAAgAAAAAA=</HashCode>
+      <FileName>Views\NewFileDialog.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="Mangaka_Studio.Services.IToolsFactory" Collapsed="true">
+    <Position X="12.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\IToolsFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Mangaka_Studio.Services.ToolsType" Collapsed="true">
+    <Position X="14.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAACAAAAAAQAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\ToolsFactory.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

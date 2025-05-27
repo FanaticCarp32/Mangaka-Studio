@@ -1,0 +1,451 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Mangaka_Studio.MainWindow" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KADBRYgMAAEAQAIAAJgCAwECQHAQCAOSTGgAiwEAHIM=</HashCode>
+      <FileName>Views\MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Views.NewFileDialog" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAIBAAQAQAAAAAEAAAAAAAIAEAAAgAAAAAA=</HashCode>
+      <FileName>Views\NewFileDialog.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Adapters.CanvasContextAdapter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAgEACAAAAAAAAAICAAAKCAAAAAAAAAACAqAAAAA=</HashCode>
+      <FileName>Controls\Adapters\CanvasContextAdapter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Adapters.ColorPickerContextAdapter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAACAAAAACAAAAAA=</HashCode>
+      <FileName>Controls\Adapters\ColorPickerContextAdapter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Adapters.FrameContextAdapter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAEgAAAAAAAAAAAAAAAEAQAQAAAQCAAAM=</HashCode>
+      <FileName>Controls\Adapters\FrameContextAdapter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Adapters.TextTemplatesContextAdapter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AICQAAACgAAAAAAAAAQKAAAAAAAABAAQAAAAAQIAAAA=</HashCode>
+      <FileName>Controls\Adapters\TextTemplatesContextAdapter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.DrawingTools" Collapsed="true">
+    <Position X="3.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAoAAAAAACAAA=</HashCode>
+      <FileName>Controls\Tools\DrawingTools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.EraserTool" Collapsed="true">
+    <Position X="6" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\Tools\EraserTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.HardEraser" Collapsed="true">
+    <Position X="5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAABAAAEAAABAAAAAAqAAAAAACAAA=</HashCode>
+      <FileName>Controls\Tools\HardEraser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.PenTool" Collapsed="true">
+    <Position X="0.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAgBACAAAAqAAAAAACAAA=</HashCode>
+      <FileName>Controls\Tools\PenTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.PipetteTool" Collapsed="true">
+    <Position X="0.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAABAAAAAAIAAAAgAAAAA=</HashCode>
+      <FileName>Controls\Tools\PipetteTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.SoftEraser" Collapsed="true">
+    <Position X="7.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAABAAAEAAABAAAAAAqAAAAAACAAA=</HashCode>
+      <FileName>Controls\Tools\SoftEraser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Tools.TextTool" Collapsed="true">
+    <Position X="2.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAgYAAEAAQAAAAAAAAAAIBAADAIAoIAAiQACAAA=</HashCode>
+      <FileName>Controls\Tools\TextTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.ColorStringToSKColorConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\Converters\ColorStringToSKColorConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.DrawingToolsConverter" Collapsed="true">
+    <Position X="18.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Controls\Converters\DrawingToolsConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.HueToColorConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\Converters\HueToColorConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.SKColorConverter" Collapsed="true">
+    <Position X="16.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Controls\Converters\SKColorConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.SKColorToBrushConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\Converters\SKColorToBrushConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.SKPathConverter" Collapsed="true">
+    <Position X="9.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Controls\Converters\SKPathConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.SKRectConverter" Collapsed="true">
+    <Position X="11.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Controls\Converters\SKRectConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Converters.ToolTypeConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\Converters\ToolTypeConverter .cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Renders.Renderer" Collapsed="true">
+    <Position X="15" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAEAAEAAAAAAAAAAAAAE=</HashCode>
+      <FileName>Controls\Renders\Renderer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.Renders.SkiaCanvas" Collapsed="true">
+    <Position X="20.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EABAAAABACAgAAgAAAAAAgABAAAIAKAAAAAADQCAgAA=</HashCode>
+      <FileName>Controls\Renders\SkiaCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.IconButton" Collapsed="true">
+    <Position X="9.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Controls\IconButton.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.IconRadioButton" Collapsed="true">
+    <Position X="11.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Controls\IconRadioButton.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.ToolEraseTemplateSelector" Collapsed="true">
+    <Position X="20.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAAAAAAAAAAAQACAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\ToolEraseTemplateSelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Controls.ToolTemplateSelector" Collapsed="true">
+    <Position X="13.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEQAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Controls\ToolTemplateSelector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.FontSlantModel" Collapsed="true">
+    <Position X="9.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Models\FontSlantModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.FrameLayerModel" Collapsed="true">
+    <Position X="13.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAEAAQAAAAAAQAAAAACAAABAgAAACAAgA=</HashCode>
+      <FileName>Models\FrameLayerModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.FrameModel" Collapsed="true">
+    <Position X="15" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAEAAAAAAAAAQAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Models\FrameModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.FrameSerializable" Collapsed="true">
+    <Position X="16.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAEAAAAAAAAAQAAAAACAAABAgAAAAAAgA=</HashCode>
+      <FileName>Models\FrameSerializable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.LayerModel" Collapsed="true">
+    <Position X="13.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACMAAAAAAAEAAAAAAAAAQAAAAAABAAAAAAAAAAAIA=</HashCode>
+      <FileName>Models\LayerModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.LayerSerializable" Collapsed="true">
+    <Position X="15" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACMAAAAAAAEAAAAAAAAAQAAAAAAAAAAAAEAAAAAIA=</HashCode>
+      <FileName>Models\LayerSerializable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.ProjectData" Collapsed="true">
+    <Position X="11.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAgAAAAAAEAIAIIAAAAEAAAAEDWQAAAAIIAAAE=</HashCode>
+      <FileName>Models\ProjectData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.TemplateModel" Collapsed="true">
+    <Position X="13.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEgIAAAACAAQIAQAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Models\TemplateModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.Models.TextModel" Collapsed="true">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQgBAAIAgAEgCgAAQCAgIAEQAAAIAAAAAQiQQAAAA=</HashCode>
+      <FileName>Models\TextModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.CanvasViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QQAAAiMIEQIiEAHAIAITAACKmgEABALKpgADJqMIAAA=</HashCode>
+      <FileName>ViewModels\CanvasViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ColorPickerViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GIMSMQgBMAAAAgAAIAYAAxAGgAAAQKCQBACgvxSBAgU=</HashCode>
+      <FileName>ViewModels\ColorPickerViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.EraserHardToolSettingsViewModel" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\EraserHardToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.EraserSoftToolSettingsViewModel" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAEAAEABAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\EraserSoftToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.EraserToolSettingsViewModel" Collapsed="true">
+    <Position X="1.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAACAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\EraserToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.FileViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAoIAAAAAIgEAAAMAABAAAAgAGAAA=</HashCode>
+      <FileName>ViewModels\FileViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.FrameViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEEQAAACAAAAwFpiAIAAAGgAIEQAOQhAACBSAAAgU=</HashCode>
+      <FileName>ViewModels\FrameViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.LayerViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgCFEAAAAAAARmABIAkKABADgIBgYkWkhAAiBDEAAgA=</HashCode>
+      <FileName>ViewModels\LayerViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.MainViewModel" Collapsed="true">
+    <Position X="18.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ECAAAAAAAAAAAAAAgAEAAAgAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>ViewModels\MainViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.PenToolSettingsViewModel" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QABAAEAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\PenToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.RelayCommand" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAEAEAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\RelayCommand.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.TextTemplatesViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIKSAAACkAAABIgIYAQKAgIlggABZQJRAAACBQIAkAQ=</HashCode>
+      <FileName>ViewModels\TextTemplatesViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.TextToolSettingsViewModel" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TextToolSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ToolsFactory" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>ViewModels\ToolsFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ToolsSettingsViewModel" Collapsed="true">
+    <Position X="3.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACBIAAAAAAAgAAAAAAAAAAAAAAAAIE=</HashCode>
+      <FileName>ViewModels\ToolsSettingsViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Mangaka_Studio.ViewModels.ToolsViewModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAEAIAAAAAACgAAAAAgAwAAAACCAAAE=</HashCode>
+      <FileName>ViewModels\ToolsViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="Mangaka_Studio.Interfaces.ICanvasContext" Collapsed="true">
+    <Position X="9.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAgEACAAAAAAAAAICAAAICAAAAAAAAAACAqAAAAA=</HashCode>
+      <FileName>Interfaces\ICanvasContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Mangaka_Studio.Interfaces.IColorPickerContext" Collapsed="true">
+    <Position X="11.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Interfaces\IColorPickerContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Mangaka_Studio.Interfaces.IFrameContext" Collapsed="true">
+    <Position X="13.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAQAQAAAACAAAE=</HashCode>
+      <FileName>Interfaces\IFrameContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Mangaka_Studio.Interfaces.ITextTemplatesContext" Collapsed="true">
+    <Position X="15" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AICQAAACgAAAAAAAAAQKAAAAAAAABAAAAAAAAQIAAAA=</HashCode>
+      <FileName>Interfaces\ITextTemplatesContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Mangaka_Studio.Interfaces.IToolsFactory" Collapsed="true">
+    <Position X="16.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IToolsFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Mangaka_Studio.Models.DragMode" Collapsed="true">
+    <Position X="9.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAEAAAAAAAAAAAAQEAAAA=</HashCode>
+      <FileName>Models\DragMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Mangaka_Studio.Models.FrameMode" Collapsed="true">
+    <Position X="11.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\FrameMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Mangaka_Studio.Models.TextMode" Collapsed="true">
+    <Position X="13.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAEACAAAAAAAAAAA=</HashCode>
+      <FileName>Models\TextMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Mangaka_Studio.Models.ToolsType" Collapsed="true">
+    <Position X="15" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAACAAAAAAQAAAAAAAAIAAAAAAACAAAAAA=</HashCode>
+      <FileName>Models\ToolsType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

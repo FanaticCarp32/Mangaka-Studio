@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mangaka_Studio.ViewModels
 {
-    class PenToolSettingsViewModel : ToolsSettingsViewModel
+    public class PenToolSettingsViewModel : ToolsSettingsViewModel
     {
         private bool isSmooth = false;
         public bool IsSmooth

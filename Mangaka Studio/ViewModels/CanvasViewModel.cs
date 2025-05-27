@@ -1,6 +1,4 @@
-﻿using Mangaka_Studio.Models;
-using Mangaka_Studio.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
@@ -9,12 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Mangaka_Studio.Commands;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using SkiaSharp;
 using Mangaka_Studio.Controls;
 using SkiaSharp.Views.WPF;
+using Mangaka_Studio.Interfaces;
+using Mangaka_Studio.Controls.Tools;
 
 namespace Mangaka_Studio.ViewModels
 {
@@ -34,9 +33,22 @@ namespace Mangaka_Studio.ViewModels
         private MatrixTransform matrixTransform = new MatrixTransform(Matrix.Identity);
         public float EraserSize { get; set; } = 20f;
         public double ScaleMax { get; set; } = 10.0;
-        public double ScaleMin { get; set; } = 0.3;
+        public double ScaleMin { get; set; } = 0.01;
+        
+        public TextBox TextEditor { get; set; }
+        public bool IsTextPosSnap { get; set; } = false;
+        private bool isTextEditor = false;
+        public bool IsTextEditor
+        {
+            get => isTextEditor;
+            set
+            {
+                isTextEditor = value;
+                OnPropertyChanged(nameof(IsTextEditor));
+            }
+        }
 
-        private int canvasWidth = 1000;
+        private int canvasWidth = 4000;
         public int CanvasWidth
         {
             get => canvasWidth;
@@ -47,7 +59,7 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
-        private int canvasHeight = 600;
+        private int canvasHeight = 4000;
         public int CanvasHeight
         {
             get => canvasHeight;
@@ -55,17 +67,6 @@ namespace Mangaka_Studio.ViewModels
             {
                 canvasHeight = value;
                 OnPropertyChanged(nameof(CanvasHeight));
-            }
-        }
-
-        private SKSurface surface;
-        public SKSurface Surface
-        {
-            get => surface;
-            set
-            {
-                surface = value;
-                OnPropertyChanged(nameof(Surface));
             }
         }
 
@@ -79,20 +80,18 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
-        public MatrixTransform CanvasMatrix
+        public bool PipetteChanged { get; set; } = false;
+        public SKPoint? LastErasePoint { get; set; } = null;
+        private SKColor colorPipette = SKColors.Transparent;
+        public SKColor ColorPipette
         {
-            get => matrixTransform;
+            get => colorPipette;
             set
             {
-                matrixTransform = value;
-                OnPropertyChanged(nameof(CanvasMatrix));
+                colorPipette = value;
+                OnPropertyChanged(nameof(ColorPipette));
             }
         }
-
-        public SKPoint? LastErasePoint { get; set; } = null;
-        public double ActualWidth { get; set; } = 0;
-        public double ActualHeight { get; set; } = 0;
-        public SKColor ColorPipette { get; set; } = SKColors.Transparent;
 
         public double Scale
         {
@@ -105,16 +104,7 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
-        private SKPoint scalePos = new SKPoint(0,0);
-        public SKPoint ScalePos
-        {
-            get => scalePos;
-            set
-            {
-                scalePos = value;
-                OnPropertyChanged(nameof(ScalePos));
-            }
-        }
+        public SKPoint ScalePos { get; set; } = new SKPoint(0,0);
 
         public double ScaleRound
         {
@@ -219,6 +209,29 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
+        public ObservableCollection<string> BubbleTemplates { get; set; } = new ObservableCollection<string>
+        {
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent1.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent2.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent3.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent4.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent5.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent6.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent7.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent8.png",
+            "pack://application:,,,/Resources/Templates/Bubbles/BubbleTransparent9.png",
+        };
+
+        public ObservableCollection<string> EffectsTemplates { get; set; } = new ObservableCollection<string>
+        {
+            "pack://application:,,,/Resources/Templates/Effects/Effects1.png",
+            "pack://application:,,,/Resources/Templates/Effects/Effects2.png",
+            "pack://application:,,,/Resources/Templates/Effects/Effects3.png",
+            "pack://application:,,,/Resources/Templates/Effects/полутон.png",
+        };
+
+        public float Pressure { get; set; } = 1f;
+
         public ICommand ZoomCommand { get; }
         public ICommand PanCommand { get; }
         public ICommand ResetCommand { get; }
@@ -257,25 +270,10 @@ namespace Mangaka_Studio.ViewModels
             GridCommand = new RelayCommand(_ => IsGrid = !IsGrid);
         }
 
-        public void OnMouseDown(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
-        {
-            currentTool?.OnMouseDown(canvasViewModel, pos, colorPickerViewModel, layerViewModel);
-        }
-
-        public void OnMouseMove(CanvasViewModel canvasViewModel, SKPoint pos, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel)
-        {
-            currentTool?.OnMouseMove(canvasViewModel, pos, colorPickerViewModel, layerViewModel);
-        }
-
         public void OnMouseMoveMouse(SKPoint pos)
         {
             if (pos.X <= CanvasWidth && pos.Y <= CanvasHeight && pos.X >= 0 && pos.Y >= 0)
                 CursorPoint = new Point(pos.X, pos.Y);
-        }
-
-        public void OnMouseUp(CanvasViewModel canvasViewModel, LayerViewModel layerViewModel)
-        {
-            currentTool?.OnMouseUp(canvasViewModel, layerViewModel);
         }
 
         public bool ScaleChanged(double zoomFactor)
@@ -299,17 +297,18 @@ namespace Mangaka_Studio.ViewModels
             return matrix.MapPoint(screenPoint);
         }
 
-        /*public SKPoint GetTransformedCanvasCenter()
+        public Point GetScreenPoint(SKPoint canvasPoint)
         {
-            // Центр канваса без смещения
-            float originalCenterX = CanvasWidth / 2;
-            float originalCenterY = CanvasHeight / 2;
-            // Применяем смещение
-            double transformedCenterX = originalCenterX + OffsetX;
-            double transformedCenterY = originalCenterY + OffsetY;
+            var matrix = SKMatrix.CreateIdentity();
 
-            return new SKPoint((float)transformedCenterX, (float)transformedCenterY);
-        }*/
+            // Прямой порядок: сначала масштаб, потом поворот, потом смещение
+            matrix = SKMatrix.Concat(matrix, SKMatrix.CreateScale((float)Scale, (float)Scale, ScalePos.X, ScalePos.Y));
+            matrix = SKMatrix.Concat(matrix, SKMatrix.CreateRotationDegrees((float)Rotate, CanvasWidth / 2, CanvasHeight / 2));
+            matrix = SKMatrix.Concat(matrix, SKMatrix.CreateTranslation((float)OffsetX, (float)OffsetY));
+
+            var screenPoint = matrix.MapPoint(canvasPoint);
+            return new Point(screenPoint.X, screenPoint.Y);
+        }
 
         private void UpdateScale()
         {

@@ -1,4 +1,4 @@
-﻿using Mangaka_Studio.Models;
+﻿using Mangaka_Studio.Controls.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;

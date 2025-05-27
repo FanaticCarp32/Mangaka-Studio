@@ -1,39 +1,49 @@
-﻿using Mangaka_Studio.Commands;
+﻿using Mangaka_Studio.Controls.Converters;
+using Mangaka_Studio.Controls.Tools;
+using Mangaka_Studio.Interfaces;
 using Mangaka_Studio.Models;
-using Mangaka_Studio.Services;
 using Microsoft.Win32;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using Path = System.IO.Path;
 
 namespace Mangaka_Studio.ViewModels
 {
     public class FileViewModel : INotifyPropertyChanged
     {
-        private readonly LayerViewModel layerViewModel;
+        private readonly FrameViewModel frameViewModel;
         private readonly CanvasViewModel canvasViewModel;
         private readonly ToolsViewModel toolsViewModel;
+        private readonly ICanvasContext canvasContext;
         private string lastFilePath;
 
         public ICommand SaveCommand { get; }
         public ICommand OpenCommand { get; }
         public ICommand IsNewFileCommand { get; }
-        public FileViewModel(LayerViewModel layerViewModel, CanvasViewModel canvasViewModel, ToolsViewModel toolsViewModel)
+        public FileViewModel(FrameViewModel frameViewModel, CanvasViewModel canvasViewModel, ToolsViewModel toolsViewModel, ICanvasContext canvasContext)
         {
-            this.layerViewModel = layerViewModel;
+            this.frameViewModel = frameViewModel;
             this.canvasViewModel = canvasViewModel;
             this.toolsViewModel = toolsViewModel;
+            this.canvasContext = canvasContext;
             OpenCommand = new RelayCommand(_ => OpenFile());
             SaveCommand = new RelayCommand(param => SaveFile((string)param));
+            this.canvasContext = canvasContext;
         }
 
         private string EncodeImageToBase64(SKImage image)
@@ -51,19 +61,44 @@ namespace Mangaka_Studio.ViewModels
 
         public void SaveFile(string asSave)
         {
-            var image = layerViewModel.GetCompositedImage();
+            var image = frameViewModel.GetCompositedImage();
             if (image != null)
             {
-                var layerData = layerViewModel.Layers.Select(layer => new LayerSerializable
+                var frameData = frameViewModel.Frames.Select(frame => new FrameSerializable
                 {
-                    Id = layer.Id,
-                    Name = layer.Name,
-                    ImageBase64 = EncodeImageToBase64(layer.Image),
-                    IsVisible = layer.IsVisible,
-                    Opacity = layer.Opacity
+                    Id = frame.Id,
+                    Model = frame.Model,
+                    Name = frame.Name, 
+                    Bounds = frame.Bounds,
+                    IsDrawBounds = frame.IsDrawBounds,
+                    IsVisible = frame.IsVisible,
+                    IsSelected = frame.IsSelected,
+                    FrameMode = frame.FrameMode,
+                    BoundsWidth = frame.BoundsWidth
                 }).ToList();
-
-                var project = new ProjectData { Layers = layerData,
+                List<List<LayerSerializable>> layersData = new List<List<LayerSerializable>>();
+                List<int> selectLayerData = new List<int>();
+                foreach (var frame in frameViewModel.Frames)
+                {
+                    selectLayerData.Add(frame.LayerVM.SelectLayer.Id);
+                    var layerData = frame.LayerVM.Layers.Select(layer => new LayerSerializable
+                    {
+                        Id = layer.Id,
+                        Name = layer.Name,
+                        ImageBase64 = EncodeImageToBase64(layer.Image),
+                        IsVisible = layer.IsVisible,
+                        Opacity = layer.Opacity,
+                        ListText = layer.ListText,
+                        ListTemplate = layer.ListTemplate
+                    }).ToList();
+                    layersData.Add(layerData);
+                }
+                var selectFrameData = frameViewModel.SelectFrame.Id;
+                var project = new ProjectData { Frames = frameData,
+                    Layers = layersData,
+                    SelectFrame = selectFrameData,
+                    SelectLayer = selectLayerData,
+                    GeneralView = frameViewModel.GeneralView,
                     CanvasWidth = canvasViewModel.CanvasWidth,
                     CanvasHeight = canvasViewModel.CanvasHeight,
                     Scale = canvasViewModel.Scale,
@@ -80,6 +115,8 @@ namespace Mangaka_Studio.ViewModels
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 options.Converters.Add(new DrawingToolsConverter());
                 options.Converters.Add(new SKColorConverter());
+                options.Converters.Add(new SKPathConverter());
+                options.Converters.Add(new SKRectConverter());
                 var json = JsonSerializer.Serialize(project, options);
                 bool.TryParse(asSave, out var isQuickSave);
                 if (!string.IsNullOrEmpty(lastFilePath) && !isQuickSave)
@@ -103,7 +140,7 @@ namespace Mangaka_Studio.ViewModels
                         using var data = image.Encode(format, 100);
                         data.SaveTo(stream);
                     }
-                    layerViewModel.IsModified = false;
+                    frameViewModel.SelectFrame.LayerVM.IsModified = false;
                     return;
                 }
 
@@ -116,7 +153,7 @@ namespace Mangaka_Studio.ViewModels
 
                 if (dialog.ShowDialog() == true)
                 {
-                    layerViewModel.IsModified = false;
+                    frameViewModel.SelectFrame.LayerVM.IsModified = false;
                     lastFilePath = dialog.FileName;
                     var extension = Path.GetExtension(dialog.FileName).ToLower();
                     if (extension == ".mgs")
@@ -134,6 +171,7 @@ namespace Mangaka_Studio.ViewModels
                         };
                         File.WriteAllText(dialog.FileName, json);
                         using var stream = File.OpenWrite(dialog.FileName);
+                        image = frameViewModel.GetCompositedFrames();
                         using var data = image.Encode(format, 100);
                         data.SaveTo(stream);
                     }
@@ -143,7 +181,7 @@ namespace Mangaka_Studio.ViewModels
 
         public void OpenFile()
         {
-            if (layerViewModel.IsModified)
+            if (frameViewModel.SelectFrame.LayerVM.IsModified)
             {
                 var result = MessageBox.Show(
                     "Файл содержит несохраненные изменения. Хотите сохранить их?",
@@ -153,11 +191,11 @@ namespace Mangaka_Studio.ViewModels
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    SaveFile("false"); // Сохраняем текущие изменения
+                    SaveFile("false");
                 }
                 else if (result == MessageBoxResult.Cancel)
                 {
-                    return; // Отменяем операцию
+                    return;
                 }
             }
 
@@ -175,21 +213,62 @@ namespace Mangaka_Studio.ViewModels
                     var options = new JsonSerializerOptions();
                     options.Converters.Add(new DrawingToolsConverter());
                     options.Converters.Add(new SKColorConverter());
+                    options.Converters.Add(new SKPathConverter());
                     var project = JsonSerializer.Deserialize<ProjectData>(json, options);
-                    layerViewModel.Layers.Clear();
-                    foreach (var layer in project.Layers)
-                    {
-                        layerViewModel.Layers.Add(new LayerModel
-                        {
-                            Id = layer.Id,
-                            Name = layer.Name,
-                            Image = DecodeImageFromBase64(layer.ImageBase64),
-                            IsVisible = layer.IsVisible,
-                            Opacity = layer.Opacity
-                        });
-                    }
+
                     canvasViewModel.CanvasWidth = project.CanvasWidth;
                     canvasViewModel.CanvasHeight = project.CanvasHeight;
+
+                    frameViewModel.Frames.Clear();
+                    foreach (var frame in project.Frames)
+                    {
+                        var path = new SKPath();
+                        var points = frame.Bounds.Points;
+                        path.MoveTo(points[0]);
+                        for (var i = 1; i < points.Length - 1; i++)
+                        {
+                            path.LineTo(points[i]);
+                        }
+                        path.Close();
+                        var frameModel = new FrameModel
+                        {
+                            Id = frame.Id,
+                            Name = frame.Name,
+                            Bounds = path,
+                            IsVisible = frame.IsVisible
+                        };
+                        frameViewModel.Frames.Add(new FrameLayerModel(frameModel, canvasContext)
+                        {
+                            IsDrawBounds = frame.IsDrawBounds,
+                            IsSelected = frame.IsSelected,
+                            FrameMode = frame.FrameMode,
+                            BoundsWidth = frame.BoundsWidth
+                        });
+                    }
+
+                    frameViewModel.SelectFrame = frameViewModel.Frames.Where(frame => frame.Id == project.SelectFrame).ToList()[0];
+                    for (var i = 0; i < frameViewModel.Frames.Count; i++)
+                    {
+                        frameViewModel.Frames[i].LayerVM.Layers.Clear();
+                        foreach (var layer in project.Layers[i])
+                        {
+                            frameViewModel.Frames[i].LayerVM.Layers.Add(new LayerModel
+                            {
+                                Id = layer.Id,
+                                Name = layer.Name,
+                                Image = DecodeImageFromBase64(layer.ImageBase64),
+                                IsVisible = layer.IsVisible,
+                                Opacity = layer.Opacity,
+                                ListText = layer.ListText,
+                                ListTemplate = layer.ListTemplate
+                            });
+                        }
+                        frameViewModel.Frames[i].LayerVM.baseSurface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+                        frameViewModel.Frames[i].LayerVM.tempSurface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+                        frameViewModel.Frames[i].LayerVM.SelectLayer = frameViewModel.Frames[i].LayerVM.Layers.Where(layer => layer.Id == project.SelectLayer[i]).ToList()[0];
+
+                    }
+                    frameViewModel.GeneralView = project.GeneralView;
                     canvasViewModel.Scale = project.Scale;
                     canvasViewModel.ScalePos = project.ScalePos;
                     canvasViewModel.Rotate = project.Rotate;
@@ -207,8 +286,8 @@ namespace Mangaka_Studio.ViewModels
                             toolsViewModel.SelectTool(tool.Key);
                         }
                     }
-                    layerViewModel.k = layerViewModel.Layers.Count;
-                    layerViewModel.SelectLayer = layerViewModel.Layers.FirstOrDefault();
+                    frameViewModel.SelectFrame.LayerVM.k = frameViewModel.SelectFrame.LayerVM.Layers.Count;
+                    frameViewModel.OnPropertyChanged(nameof(frameViewModel.SelectFrame));
                 }
                 else
                 {
@@ -224,18 +303,22 @@ namespace Mangaka_Studio.ViewModels
                         var fileName = Path.GetFileNameWithoutExtension(dialog.FileName);
                         canvasViewModel.CanvasHeight = image.Height;
                         canvasViewModel.CanvasWidth = image.Width;
-                        layerViewModel.Layers.Clear();
-                        layerViewModel.Layers.Add(new LayerModel
+                        NewFrame();
+                        frameViewModel.SelectFrame = frameViewModel.Frames.FirstOrDefault();
+                        frameViewModel.SelectFrame.LayerVM.Layers.Clear();
+                        frameViewModel.SelectFrame.LayerVM.Layers.Add(new LayerModel
                         {
-                            Id = layerViewModel.GetNewIdLayer(true),
+                            Id = frameViewModel.SelectFrame.LayerVM.GetNewIdLayer(true),
                             Name = fileName,
                             Image = image
-                        });
-                        layerViewModel.SelectLayer = layerViewModel.Layers.FirstOrDefault();
+                        }); 
+                        frameViewModel.SelectFrame.LayerVM.baseSurface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+                        frameViewModel.SelectFrame.LayerVM.tempSurface = SKSurface.Create(new SKImageInfo((int)canvasViewModel.CanvasWidth, (int)canvasViewModel.CanvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
+                        frameViewModel.SelectFrame.LayerVM.SelectLayer = frameViewModel.SelectFrame.LayerVM.Layers.FirstOrDefault();
                     }
                 }
                 lastFilePath = dialog.FileName;
-                layerViewModel.IsModified = false;
+                frameViewModel.SelectFrame.LayerVM.IsModified = false;
             }
         }
 
@@ -244,8 +327,10 @@ namespace Mangaka_Studio.ViewModels
             canvasViewModel.CanvasWidth = width;
             canvasViewModel.CanvasHeight = height;
             canvasViewModel.ResetCommand.Execute(null);
-            layerViewModel.Layers.Clear();
-            var id = layerViewModel.GetNewIdLayer(true);
+            NewFrame();
+            frameViewModel.SelectFrame = frameViewModel.Frames.FirstOrDefault();
+            frameViewModel.SelectFrame.LayerVM.Layers.Clear();
+            var id = frameViewModel.SelectFrame.LayerVM.GetNewIdLayer(true);
             var newLayer = new LayerModel
             {
                 Id = id,
@@ -259,8 +344,28 @@ namespace Mangaka_Studio.ViewModels
                 newLayer.Image = surface.Snapshot();
                 surface.Dispose();
             }
-            layerViewModel.Layers.Add(newLayer);
-            layerViewModel.SelectLayer = newLayer;
+            frameViewModel.SelectFrame.LayerVM.Layers.Add(newLayer);
+            frameViewModel.SelectFrame.LayerVM.SelectLayer = newLayer;
+        }
+
+        private void NewFrame()
+        {
+            frameViewModel.Frames.Clear();
+            var id = frameViewModel.GetNewIdLayer(true);
+            var path = new SKPath();
+            path.MoveTo(0, 0);
+            path.LineTo(canvasViewModel.CanvasWidth, 0);
+            path.LineTo(canvasViewModel.CanvasWidth, canvasViewModel.CanvasHeight);
+            path.LineTo(0, canvasViewModel.CanvasHeight);
+            path.Close();
+            var newFrame = new FrameModel
+            {
+                Id = id,
+                Name = $"Кадр {id}",
+                Bounds = path
+            };
+            var frameLayer = new FrameLayerModel(newFrame, canvasContext);
+            frameViewModel.Frames.Add(frameLayer);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
