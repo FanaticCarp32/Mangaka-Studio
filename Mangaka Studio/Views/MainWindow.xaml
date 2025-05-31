@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mangaka_Studio.Controls"
+        xmlns:render="clr-namespace:Mangaka_Studio.Controls.Renders"
         xmlns:tools="clr-namespace:Mangaka_Studio.ViewModels"
-        xmlns:enums="clr-namespace:Mangaka_Studio.Services"
+        xmlns:enums="clr-namespace:Mangaka_Studio.Models"
         xmlns:models="clr-namespace:Mangaka_Studio.Models"
         mc:Ignorable="d"
         Title="Mangaka Studio" Height="540" Width="960" 
@@ -15,24 +16,24 @@
         PreviewMouseDown="Window_PreviewMouseDown"
         Closing="Window_Closing">
     <Window.InputBindings>
-        <KeyBinding Modifiers="Ctrl" Key="Z" Command="{Binding LayerVM.UndoCommand}"></KeyBinding>
-        <KeyBinding Modifiers="Ctrl+Shift" Key="Z" Command="{Binding LayerVM.RedoCommand}"></KeyBinding>
+        <KeyBinding Modifiers="Ctrl" Key="Z" Command="{Binding FrameVM.SelectFrame.LayerVM.UndoCommand}"></KeyBinding>
+        <KeyBinding Modifiers="Ctrl+Shift" Key="Z" Command="{Binding FrameVM.SelectFrame.LayerVM.RedoCommand}"></KeyBinding>
         <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding FileVM.SaveCommand}" CommandParameter="false"></KeyBinding> 
     </Window.InputBindings>
     <DockPanel Cursor="">
-        <StackPanel Background="{StaticResource MainGradientInverse}" DockPanel.Dock="Top">
+        <StackPanel Background="{StaticResource BrushMedium}" DockPanel.Dock="Top">
             <Menu Cursor="Hand">
-                <MenuItem DataContext="{Binding FileVM}" Header="Файл" Cursor="Hand">
+                <MenuItem Foreground="Black" Background="{StaticResource MainColorMenu}" Margin="3" DataContext="{Binding FileVM}" Header="Файл" Cursor="Hand">
                     <MenuItem Header="Создать" Click="MenuItem_Click"></MenuItem>
                     <MenuItem Header="Открыть" Command="{Binding OpenCommand}"></MenuItem>
                     <MenuItem Header="Сохранить" Command="{Binding SaveCommand}" CommandParameter="false"></MenuItem>
                     <MenuItem Header="Сохранить как" Command="{Binding SaveCommand}" CommandParameter="true"></MenuItem>
                 </MenuItem>
-                <MenuItem DataContext="{Binding LayerVM}" Header="Правка">
-                    <MenuItem Header="Назад" Command="{Binding UndoCommand}"></MenuItem>
-                    <MenuItem Header="Вперед" Command="{Binding RedoCommand}"></MenuItem>
+                <MenuItem Foreground="Black" Background="{StaticResource MainColorMenu}" Margin="3" DataContext="{Binding LayerVM}" Header="Правка">
+                    <MenuItem Header="Назад" Command="{Binding DataContext.FrameVM.SelectFrame.LayerVM.UndoCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"></MenuItem>
+                    <MenuItem Header="Вперед" Command="{Binding DataContext.FrameVM.SelectFrame.LayerVM.RedoCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"></MenuItem>
                 </MenuItem>
-                <MenuItem DataContext="{Binding CanvasVM}" Header="Вид" Cursor="Hand">
+                <MenuItem Foreground="Black" Background="{StaticResource MainColorMenu}" Margin="3" DataContext="{Binding CanvasVM}" Header="Вид" Cursor="Hand">
                     <MenuItem Header="Сетка">
                         <MenuItem Header="{Binding IsGridText}" IsCheckable="True" IsChecked="{Binding IsGrid, Mode=TwoWay}"></MenuItem>
                         <MenuItem Header="Размер сетки">
@@ -46,28 +47,27 @@
                 </MenuItem>
             </Menu>
         </StackPanel>
-        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Top" BorderBrush="{StaticResource MainColor}"></Border>
+        <Border DockPanel.Dock="Top" BorderThickness="1" BorderBrush="{StaticResource MainColorCanvas}"></Border>
         <StackPanel DataContext="{Binding ToolsVM}" Style="{StaticResource MenuPanel}" DockPanel.Dock="Top" Cursor="">
-            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" IconSource="Resources\icons8-кисть.png">Кисть</local:IconRadioButton>
-            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" IconSource="Resources\icons8-карандаш.png">Карандаш</local:IconRadioButton>
             <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Pen}" IconSource="Resources\icons8-ручка.png">Ручка</local:IconRadioButton>
-            <local:IconRadioButton GroupName="Tools" Margin="5" x:Name="Pipette"  Command="{Binding DataContext.ToolsVM.SelectPenCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" CommandParameter="{x:Static enums:ToolsType.Pipette}" Style="{StaticResource ToolsButton}" IconSource="Resources\icons8-пипетка.png">Пипетка</local:IconRadioButton>
+            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Pipette}" IconSource="Resources\icons8-пипетка.png" x:Name="Pipette">Пипетка</local:IconRadioButton>
             <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" Command="{Binding SelectPenCommand}" CommandParameter="{Binding LastEraseToolsType}" IconSource="Resources\icons8-ластик.png">Ластик</local:IconRadioButton>
+            <local:IconRadioButton GroupName="Tools" Margin="5" Style="{StaticResource ToolsButton}" Command="{Binding SelectPenCommand}" CommandParameter="{x:Static enums:ToolsType.Text}" IconSource="Resources\icon-текст.png">Текст/Шаблон</local:IconRadioButton>
         </StackPanel>
-        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Top" BorderBrush="{StaticResource MainColor}"></Border>
-        <Grid Background="{StaticResource MainColorGrid}" DockPanel.Dock="Left">
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Top" BorderBrush="{StaticResource MainBrush}"></Border>
+        <Grid Background="{StaticResource BrushMedium}" DockPanel.Dock="Left">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Background="{StaticResource MainGradientInverse}" DataContext="{Binding CanvasVM}">
+            <Grid Grid.Row="0" Background="{StaticResource BrushMedium}" DataContext="{Binding CanvasVM}">
                 <ContentControl Content="{Binding CurrentTool.Settings}" ContentTemplateSelector="{StaticResource ToolTemplateSelector}" HorizontalAlignment="Stretch">
-
+                    
                 </ContentControl>
             </Grid>
             <Border Grid.Row="1" Height="2" Style="{StaticResource BorderInner}"></Border>
-            <Grid Grid.Row="2" Background="{StaticResource MainColorGrid}"  DataContext="{Binding ColorVM}" Margin="10" Cursor="">
+            <Grid Grid.Row="2" Background="{StaticResource BrushMedium}"  DataContext="{Binding ColorVM}" Margin="10" Cursor="">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="200"></RowDefinition>
                     <RowDefinition Height="30"></RowDefinition>
@@ -121,7 +121,7 @@
                                      Command="{Binding GetColorButtonPalette}"></RadioButton>
                         <local:IconButton x:Name="AddColor" Command="{Binding AddColorCommand}" Style="{StaticResource UpdateIconButton}" IconSource="Resources\free-icon-plus.png" Margin="2,4,12,0" Grid.Row="1"></local:IconButton>
                         <Popup x:Name="PopupPaletteColor" IsOpen="{Binding IsExpanded}" PlacementTarget="{Binding ElementName=ArrayColor}" AllowsTransparency="True" VerticalOffset="5" HorizontalOffset="10" Placement="Right" StaysOpen="True">
-                            <Border Background="{StaticResource MainGradient}" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
+                            <Border Background="{StaticResource BrushMedium}" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -129,7 +129,7 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"></RowDefinition>
                                         <RowDefinition Height="1"></RowDefinition>
-                                        <RowDefinition Height="40"></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <ItemsControl Grid.Column="0" Grid.Row="0" ItemsSource="{Binding AvailableColors}">
                                         <ItemsControl.ItemsPanel>
@@ -153,12 +153,12 @@
                                             <ColumnDefinition Width="30"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel VerticalAlignment="Center" Grid.Column="0" Orientation="Horizontal">
-                                            <TextBlock FontSize="16" Margin="5" VerticalAlignment="Center">R:</TextBlock>
-                                            <TextBox Width="40" Height="30" MaxLength="3" Style="{StaticResource TextBoxRGB}" Text="{Binding Red, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
-                                            <TextBlock FontSize="16" Margin="5" VerticalAlignment="Center">G:</TextBlock>
-                                            <TextBox Width="40" Height="30" MaxLength="3" Style="{StaticResource TextBoxRGB}" Text="{Binding Green, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
-                                            <TextBlock FontSize="16" Margin="5" VerticalAlignment="Center">B:</TextBlock>
-                                            <TextBox Margin="0,0,5,0" Width="40" Height="30" MaxLength="3" Style="{StaticResource TextBoxRGB}" Text="{Binding Blue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                            <TextBlock Style="{StaticResource MainFont}" Margin="5" VerticalAlignment="Center">R:</TextBlock>
+                                            <TextBox MaxLength="3" Text="{Binding Red, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                            <TextBlock Style="{StaticResource MainFont}" Margin="5" VerticalAlignment="Center">G:</TextBlock>
+                                            <TextBox MaxLength="3" Text="{Binding Green, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                            <TextBlock Style="{StaticResource MainFont}" Margin="5" VerticalAlignment="Center">B:</TextBlock>
+                                            <TextBox Margin="0,0,5,0" MaxLength="3" Text="{Binding Blue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
                                         </StackPanel>
                                         <Border Grid.Column="1" BorderThickness="1" BorderBrush="Black"></Border>
                                         <local:IconButton x:Name="DeleteColor" Width="20" Height="20" Grid.Column="2" Style="{StaticResource UpdateIconButton}" IconSource="Resources\free-icon-cross.png"
@@ -197,10 +197,12 @@
         </Grid>
         
 
-        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Left" BorderBrush="{StaticResource MainColor}"></Border>
-        <Grid Background="{StaticResource MainColorGrid}" DockPanel.Dock="Right">
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Left" BorderBrush="{StaticResource MainBrush}"></Border>
+        <Grid MaxWidth="210" Background="{StaticResource BrushMedium}" DockPanel.Dock="Right">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
@@ -210,60 +212,105 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="1"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="1"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="2"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Expander Grid.Row="0" Style="{StaticResource ModernExpander}" IsExpanded="False" Header="Шаблоны">
-                        <StackPanel DataContext="{Binding DataContext.ToolsVM, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Cursor="">
-                            <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}">Шаблон 1</local:IconRadioButton>
-                            <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}">Шаблон 2</local:IconRadioButton>
-                        </StackPanel>
-                    </Expander>
-                    <Border Grid.Row="1" Style="{StaticResource BorderInner}"></Border>
-                    <Expander Grid.Row="2" Style="{StaticResource ModernExpander}" IsExpanded="False" Header="Раскадровки">
-                        <StackPanel DataContext="{Binding DataContext.ToolsVM, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Cursor="">
-                            <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}">Раскадровка 1</local:IconRadioButton>
-                            <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}">Раскадровка 2</local:IconRadioButton>
-                        </StackPanel>
-                    </Expander>
-                    <Border Grid.Row="3" Style="{StaticResource BorderInner}"></Border>
-                    <Expander Grid.Row="4" Style="{StaticResource ModernExpander}" IsExpanded="False" Header="Эффекты">
-                        <StackPanel DataContext="{Binding DataContext.ToolsVM, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Cursor="">
-                            <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}">Эффект 1</local:IconRadioButton>
-                            <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}">Эффект 2</local:IconRadioButton>
-                        </StackPanel>
-                    </Expander>
+                    <TextBlock Grid.Row="0" HorizontalAlignment="Center" Style="{StaticResource MainFont}" Text="Шаблоны"/>
+                    <Border Grid.Row="1" Margin="5,0" Style="{StaticResource BorderInner}"/>
+                    <TabControl Grid.Row="2" Margin="3" Style="{StaticResource ModernTabControl}">
+                        <TabItem Header="Пузыри" Style="{StaticResource ModernTabItem}">
+                            <ListBox ItemsSource="{Binding BubbleTemplates}"
+                                     Background="Transparent" ItemContainerStyle="{StaticResource LayerListBoxItem}"
+                                     BorderThickness="1" BorderBrush="Transparent"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Border Margin="3" Padding="0" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+
+                                            </Border>
+                                            <Border Margin="3" Padding="0" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+                                                <Image Source="{Binding}" Width="60" Height="60" Margin="5"
+                                                    MouseMove="Image_MouseMove"/>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </TabItem>
+
+                        <TabItem Header="Эффекты" Style="{StaticResource ModernTabItem}">
+                            <ListBox ItemsSource="{Binding EffectsTemplates}"
+                                     Background="Transparent" ItemContainerStyle="{StaticResource LayerListBoxItem}"
+                                     BorderThickness="1" BorderBrush="Transparent"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Border Margin="3" Padding="0" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+
+                                            </Border>
+                                            <Border Margin="3" Padding="0" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+                                                <Image Source="{Binding}" Width="60" Height="60" Margin="5"
+                                                        MouseMove="Image_MouseMove"/>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </TabItem>
+                    </TabControl>
                 </Grid>
             </Grid>
             <Border Grid.Row="1" Style="{StaticResource BorderInner}"></Border>
-            <Grid Grid.Row="2" Background="{StaticResource MainColorGrid}" DataContext="{Binding LayerVM}" Margin="10" Cursor="">
+            <Grid Grid.Row="2" Background="{StaticResource BrushMedium}" DataContext="{Binding FrameVM}" Margin="5" Cursor="">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Список слоев -->
-                <ListBox Grid.Row="0" ItemsSource="{Binding Layers}" SelectedItem="{Binding SelectLayer}" ItemContainerStyle="{StaticResource LayerListBoxItem}" 
-                         BorderThickness="1" BorderBrush="Transparent" MaxWidth="300" MaxHeight="300" Background="Transparent"
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Раскадровка" Style="{StaticResource MainFont}"/>
+                    <local:IconButton Margin="0,0,5,0" Grid.Column="1" Height="25" Width="25" x:Name="SettingsFrame" IconSource="Resources\icons8-настройки.png" Style="{StaticResource UpdateIconButton}" Command="{Binding ToggleExpandCommand}"></local:IconButton>
+                    <CheckBox Grid.Column="2" HorizontalAlignment="Center" Style="{StaticResource VSMCheckBoxEyeToggle}" IsChecked="{Binding GeneralView}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                </Grid>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Frames}" SelectedItem="{Binding SelectFrame}" ItemContainerStyle="{StaticResource LayerListBoxItem}" 
+                         BorderThickness="1" BorderBrush="Transparent" Width="200" Height="200" Background="Transparent"
                          ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True"
                          DragEnter="ListBox_DragEnter" DragOver="ListBox_DragOver" Drop="ListBox_Drop" PreviewMouseMove="ListBox_PreviewMouseMove">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                <Border Margin="5" Padding="5" Background="{StaticResource MainGradientLight}" CornerRadius="8" BorderBrush="{StaticResource MainColor}" BorderThickness="1">
-                                    <Border.Effect>
-                                        <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"></DropShadowEffect>
-                                    </Border.Effect>
+                                <Border Margin="3" Padding="0" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+                                    
                                 </Border>
-                                <Border Margin="5" Padding="5" Background="{StaticResource MainGradientLight}" CornerRadius="8" BorderBrush="{StaticResource MainColor}" BorderThickness="1">
+                                <Border Margin="3" Padding="3" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Style="{StaticResource VSMCheckBox}" IsChecked="{Binding IsVisible}" Command="{Binding DataContext.LayerVM.ToggleVisibilityCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Margin="0,0,5,0" 
+                                        <CheckBox Style="{StaticResource VSMCheckBoxEyeToggle}" IsChecked="{Binding IsVisible}" Command="{Binding DataContext.FrameVM.ToggleVisibilityCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Margin="0,0,5,0" 
                                       VerticalAlignment="Center"/>
-                                        <TextBlock x:Name="LayerNameTextBlock" Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" MouseDown="TextBlock_MouseDown"/>
-                                        <TextBox x:Name="LayerNameTextBox"
+                                        <TextBlock x:Name="FrameNameTextBlock" Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" MouseDown="TextBlock_MouseDown"/>
+                                        <TextBox x:Name="FrameNameTextBox"
                                              Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="Collapsed"
                                              FontSize="14"
@@ -275,61 +322,296 @@
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    
+                </ListBox>
+                <Popup x:Name="PopupSettingsFrame" IsOpen="{Binding IsExpanded}" PlacementTarget="{Binding ElementName=SettingsFrame}" AllowsTransparency="True" VerticalOffset="-70" HorizontalOffset="-15" Placement="Left" StaysOpen="False">
+                    <Border Background="{StaticResource BrushMedium}" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="1"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" Style="{StaticResource MainFont}">
+                                <Run>Настройки </Run>
+                                <Run Text="{Binding SelectFrame.Name}"></Run>
+                            </TextBlock>
+                            <Border Grid.Row="1" BorderThickness="1" BorderBrush="Black"></Border>
+                            <Grid Margin="5" Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Expander Grid.Row="0" Style="{StaticResource ModernExpander}" Header="Форма" IsExpanded="True">
+                                    <StackPanel Cursor="">
+                                        <local:IconRadioButton Margin="5,10,5,5" Style="{StaticResource EraserButton}" IconSource="Resources\icons8-прямоугольная.png" Command="{Binding SelectFrameModeCommand}" CommandParameter="{x:Static enums:FrameMode.Rectangle}">Прямоугольная</local:IconRadioButton>
+                                        <local:IconRadioButton Margin="5" Style="{StaticResource EraserButton}" IconSource="Resources\icons8-ломанная.png" Command="{Binding SelectFrameModeCommand}" CommandParameter="{x:Static enums:FrameMode.Polyline}">Ломанная</local:IconRadioButton>
+                                    </StackPanel>
+                                </Expander>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                    <CheckBox Style="{StaticResource VSMCheckBox}" IsChecked="{Binding IsSelectedVM}" Margin="0,0,5,0" 
+                                                VerticalAlignment="Center"/>
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Изменить размер" Style="{StaticResource MainFont}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                    <CheckBox Style="{StaticResource VSMCheckBox}" IsChecked="{Binding IsDrawBoundsVM}" Margin="0,0,5,0" 
+                                                VerticalAlignment="Center"/>
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Рамка" Style="{StaticResource MainFont}"/>
+                                    <TextBlock Grid.Row="3" Opacity="{Binding OpacityBounds}" IsHitTestVisible="{Binding IsHit}"  VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                                        <Slider Width="50" Style="{StaticResource AllSlider}" Minimum="{Binding BoundsWidthMin}" Maximum="{Binding BoundsWidthMax}" Value="{Binding BoundsWidthVM, Mode=TwoWay}"/>
+                                        <Run Text="{Binding BoundsWidthVM}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Popup>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
+                    <local:IconButton Margin="0,0,5,0" VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-plus.png" Command="{Binding AddFrameCommand}">Создать</local:IconButton>
+                    <local:IconButton VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-cross.png" Command="{Binding DeleteFrameCommand}">Удалить</local:IconButton>
+                </StackPanel>
+                <Border Grid.Row="3" Style="{StaticResource BorderInner}"/>
+                <Grid Margin="0,5,0,0" Grid.Row="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center" Text="Создать шаблон раскадровки"/>
+                        <local:IconButton Height="25" Width="25" x:Name="HelpGenerate" Grid.Column="1" Style="{StaticResource UpdateIconButton}" Command="{Binding ToggleExpandHelpCommand}" IconSource="Resources\question-mark.png"/>
+                    </Grid>
+                    <TextBox Margin="3" Grid.Row="1" Text="{Binding Config}"/>
+                    <Button Grid.Row="2" HorizontalAlignment="Center" Style="{StaticResource PopUpButton}" Command="{Binding GenerateFrameCommand}">Сгенерировать</Button>
+                </Grid>
+                <Popup x:Name="PopupHelpGenerate"
+       IsOpen="{Binding IsExpandedHelp}"
+       PlacementTarget="{Binding ElementName=HelpGenerate}"
+       AllowsTransparency="True"
+       VerticalOffset="-70"
+       HorizontalOffset="-15"
+       Placement="Left"
+       StaysOpen="False">
+
+                    <Border Background="{StaticResource BrushMedium}" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Padding="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="1"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Помощь" Style="{StaticResource MainFont}"/>
+
+                            <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="Black" Margin="0,5"/>
+
+                            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" MaxHeight="400" MinWidth="400" MaxWidth="600">
+                                <RichTextBox IsReadOnly="True" BorderThickness="0" Background="Transparent" HorizontalAlignment="Stretch">
+                                    <FlowDocument>
+                                        <Paragraph>
+                                            Этот язык позволяет задавать иерархическую структуру фреймов (кадров) для последующей отрисовки на холсте.
+                                        </Paragraph>
+                                        <Paragraph>
+                                            Он поддерживает вложенные секции, индивидуальные отступы и ширину рамок.
+                                        </Paragraph>
+
+                                        <Paragraph FontWeight="Bold">🔤 Общий синтаксис</Paragraph>
+                                        <Paragraph>Cols x Rows[:Spacing[:BorderWidth]][Children]</Paragraph>
+                                        <List MarkerStyle="Disc">
+                                            <ListItem>
+                                                <Paragraph>Cols — количество столбцов.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Rows — количество строк.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Spacing (необязательно) — расстояние между кадрами, по умолчанию 0.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>BorderWidth (необязательно) — ширина границы фрейма, по умолчанию 2.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Children (необязательно) — вложенные элементы в квадратных скобках.</Paragraph>
+                                            </ListItem>
+                                        </List>
+
+                                        <Paragraph FontStyle="Italic">Пример:
+                                            <Bold>3x2:10:5</Bold>
+                                        </Paragraph>
+                                        <Paragraph>Сетка 3x2, с отступами между кадрами по 10 и рамкой шириной 5.</Paragraph>
+
+                                        <Paragraph FontWeight="Bold">Вложенность</Paragraph>
+                                        <Paragraph>
+                                            Вложенные секции указываются в квадратных скобках
+                                            <Bold>[...]</Bold> после основной секции.
+                                            <LineBreak/>
+                                            Количество вложенных элементов должно соответствовать
+                                            <Bold>Cols * Rows</Bold> .
+                                            <LineBreak/>
+                                            Используй
+                                            <Bold>-</Bold> чтобы пропустить вложенный элемент в позиции.
+                                        </Paragraph>
+
+                                        <Paragraph FontStyle="Italic">Пример:
+                                            <Bold>2x1[1x2:5:1, 2x1[1x1, 1x1]]</Bold>
+                                        </Paragraph>
+                                        <Paragraph>
+                                            Верхний уровень: 2 столбца, 1 строка.
+                                            <LineBreak/>
+                                            Первый столбец — вложенная сетка 1x2 с отступом 5 и рамкой 1.
+                                            <LineBreak/>
+                                            Второй столбец — ещё одна вложенность 2x1, в ней по 1 фрейму в каждом столбце.
+                                        </Paragraph>
+
+                                        <Paragraph FontWeight="Bold">Ограничения и правила</Paragraph>
+                                        <List MarkerStyle="Disc">
+                                            <ListItem>
+                                                <Paragraph>Все значения должны быть целыми положительными числами.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Пробелы в конфигурации не допускаются.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Количество вложенных элементов в
+                                                    <Bold>[]</Bold> должно быть ровно
+                                                    <Bold>Cols * Rows</Bold> .
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Скобки обязательно должны быть сбалансированы.</Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>Допустимы только
+                                                    <Bold>,</Bold> для разделения,
+                                                    <Bold>[</Bold> и
+                                                    <Bold>]</Bold> для вложенности.
+                                                </Paragraph>
+                                            </ListItem>
+                                        </List>
+                                    </FlowDocument>
+                                </RichTextBox>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Popup>
+
+            </Grid>
+            <Border Grid.Row="3" Style="{StaticResource BorderInner}"></Border>
+            <Grid Grid.Row="4" Background="{StaticResource BrushMedium}" DataContext="{Binding FrameVM}" Margin="5" Cursor="">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Слои" Style="{StaticResource MainFont}"/>
+                <ListBox Grid.Row="1" ItemsSource="{Binding SelectFrame.LayerVM.Layers}" SelectedItem="{Binding SelectFrame.LayerVM.SelectLayer}" ItemContainerStyle="{StaticResource LayerListBoxItem}" 
+                         BorderThickness="1" BorderBrush="Transparent" Width="200" Height="200" Background="Transparent"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True"
+                         DragEnter="ListBox_DragEnter" DragOver="ListBox_DragOver" Drop="ListBox_Drop" PreviewMouseMove="ListBox_PreviewMouseMove">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Border Margin="3" Padding="0" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+
+                                </Border>
+                                <Border Margin="3" Padding="3" Background="{StaticResource BrushMediumLight}" CornerRadius="8" BorderBrush="{StaticResource MainBrush}" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox Style="{StaticResource VSMCheckBoxEyeToggle}" IsChecked="{Binding IsVisible}" Command="{Binding DataContext.FrameVM.SelectFrame.LayerVM.ToggleVisibilityCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Margin="0,0,5,0" 
+                                                    VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="LayerNameTextBlock" Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" MouseDown="TextBlock_MouseDown"/>
+                                        <TextBox x:Name="LayerNameTextBox"
+                                                 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Visibility="Collapsed"
+                                                 FontSize="14"
+                                                 VerticalAlignment="Center"
+                                                 LostFocus="LayerNameTextBox_LostFocus"
+                                                 KeyDown="LayerNameTextBox_KeyDown"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
 
-                <!-- Кнопки управления -->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-                    <local:IconButton Margin="0,0,5,0" VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-plus.png" Command="{Binding AddLayerCommand}">Добавить</local:IconButton>
-                    <local:IconButton VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-cross.png" Command="{Binding DeleteLayerCommand}">Удалить</local:IconButton>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+                    <local:IconButton Margin="0,0,5,0" VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-plus.png" Command="{Binding SelectFrame.LayerVM.AddLayerCommand}">Создать</local:IconButton>
+                    <local:IconButton VerticalAlignment="Center" Style="{StaticResource LayersIconButton}" IconSource="Resources\free-icon-cross.png" Command="{Binding SelectFrame.LayerVM.DeleteLayerCommand}">Удалить</local:IconButton>
                 </StackPanel>
             </Grid>
-
         </Grid>
         
-        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Right" BorderBrush="{StaticResource MainColor}"></Border>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Right" BorderBrush="{StaticResource MainBrush}"></Border>
 
 
-        <StackPanel Style="{StaticResource MenuPanel}" DataContext="{Binding CanvasVM}" DockPanel.Dock="Bottom" Cursor="">
-            <TextBlock VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
-                <Run Text="Разрешение: " />
+        <Grid Background="{StaticResource BrushMedium}" DataContext="{Binding CanvasVM}" DockPanel.Dock="Bottom" Cursor="">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                
                 <Run Text="{Binding CanvasWidth}" />
                 <Run Text=":" />
                 <Run Text="{Binding CanvasHeight}" />
                 <Run Text="px" />
             </TextBlock>
-            <Border Style="{StaticResource BorderInner}"></Border>
-            <TextBlock Width="180" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
-                <Run Text="Масштаб: " />
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                
                 <Slider Width="50" Style="{StaticResource AllSlider}" Minimum="{Binding ScaleMin}" Maximum="{Binding ScaleMax}" Value="{Binding Scale, Mode=TwoWay}"></Slider>
                 <Run Text="x" />
-                <Run Text="{Binding ScaleRound}"/>
+                <Run Text="{Binding ScaleRound, StringFormat={}{0:0.000}}"/>
             </TextBlock>
-            <Border Style="{StaticResource BorderInner}"></Border>
-            <TextBlock Width="180" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
-                <Run Text="Ориентация: " />
+            <TextBlock Grid.Column="2" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                
                 <Slider Width="50" Style="{StaticResource AllSlider}" Minimum="0" Maximum="360" Value="{Binding Rotate, Mode=TwoWay}"></Slider>
                 <Run Text="{Binding Rotate}"/>
+                <Run Text="°"/>
             </TextBlock>
-            <Border Style="{StaticResource BorderInner}"></Border>
-            <local:IconButton Margin="5" Command="{Binding ResetCommand}" Style="{StaticResource LayersIconButton}" IconSource="Resources\arrow-reset.png" Cursor="Hand">Сброс</local:IconButton>
-            <Border Style="{StaticResource BorderInner}"></Border>
-            <TextBlock VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
-                <Run Text="Курсор: " />
+            <local:IconButton Grid.Column="4" Margin="5" Command="{Binding ResetCommand}" Style="{StaticResource LayersIconButton}" IconSource="Resources\arrow-reset.png" Cursor="Hand">Сброс</local:IconButton>
+            <TextBlock Grid.Column="3" VerticalAlignment="Center" Padding="5" Style="{StaticResource MainFont}">
+                
                 <Run Text="{Binding CursorPoint}"/>
             </TextBlock>
-            <Border Style="{StaticResource BorderInner}"></Border>
-        </StackPanel>
-        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Bottom" BorderBrush="{StaticResource MainColor}"></Border>
-        <Grid x:Name="GridCanvas" Background="Gray" DockPanel.Dock="Bottom" Cursor="">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-            </Grid.RowDefinitions>
-            <Border Name="DrawBorder" Background="Transparent"  ClipToBounds="True" Grid.Row="0" Cursor="">
-                <local:SkiaCanvas DataContext="{Binding CanvasVM}" x:Name="MainDrawing" Cursor="Pen" Panel.ZIndex="0">
-
-                </local:SkiaCanvas>
-            </Border>
         </Grid>
+        <Border Style="{StaticResource BorderCanvas}" DockPanel.Dock="Bottom" BorderBrush="{StaticResource MainBrush}"></Border>
+
+        <Border Name="DrawBorder" Background="Transparent"  ClipToBounds="True" Grid.Row="0" Cursor="">
+            <Grid x:Name="GridCanvas" Background="{StaticResource MainColorCanvas}"  DockPanel.Dock="Bottom" Cursor="">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <render:SkiaCanvas x:Name="MainDrawing" DataContext="{Binding CanvasVM}" Cursor="Pen" Panel.ZIndex="0">
+
+                </render:SkiaCanvas>
+                <Canvas DataContext="{Binding FrameVM.SelectFrame.LayerVM}" x:Name="OverlayCanvas" IsHitTestVisible="False" Panel.ZIndex="10" >
+                    <TextBox x:Name="TextEditor"
+                            Visibility="Collapsed"
+                            Background="Transparent"
+                            AcceptsReturn="True"
+                            TextWrapping="Wrap"
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Auto"
+                            BorderThickness="0"
+                            FontFamily="Arial"
+                            FontSize="20"
+                            Text="{Binding SelectText.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </Canvas>
+            </Grid>
+
+        </Border>
     </DockPanel>
     
 </Window>

@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,14 +11,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Resources;
 using System.Windows.Shapes;
-using Mangaka_Studio.Controls;
+using System.Xml.Linq;
+using Mangaka_Studio.Controls.Renders;
+using Mangaka_Studio.Controls.Tools;
+using Mangaka_Studio.Interfaces;
 using Mangaka_Studio.Models;
-using Mangaka_Studio.Services;
 using Mangaka_Studio.ViewModels;
 using Mangaka_Studio.Views;
+using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
+using static System.Net.Mime.MediaTypeNames;
+using Image = System.Windows.Controls.Image;
 
 namespace Mangaka_Studio
 {
@@ -27,37 +35,150 @@ namespace Mangaka_Studio
     {
         CanvasViewModel canvas;
         ColorPickerViewModel color;
-        LayerViewModel layer;
+        TextTemplatesViewModel textTemp;
+        private ICanvasContext canvasContext;
+        private IFrameContext frameContext;
+        private IColorPickerContext colorPickerContext;
+        private ITextTemplatesContext textTemplatesContext;
+        FrameViewModel frame;
         FileViewModel file;
         SKPoint lastPos = new SKPoint(0, 0);
         bool flag = false;
         bool isEdit = false;
+        bool flagStylus = false;
         DateTime lastClickTime;
         const int DoubleClickTimeThreshold = 300;
-        LayerModel draggedItem;
+        Object draggedItem;
+        int snap = 10;
         SkiaCanvas skiaCanvas;
+        DragMode currentDrag = DragMode.None;
+        int currentPoint;
+        SKPoint dragStart;
+        SKPoint[] originalBounds;
 
-        public MainWindow(CanvasViewModel canvas1, MainViewModel mainViewModel, ColorPickerViewModel colorPickerViewModel, LayerViewModel layerViewModel, FileViewModel fileViewModel)
+        public MainWindow(ToolsViewModel toolsViewModel, CanvasViewModel canvas1, MainViewModel mainViewModel, ColorPickerViewModel colorPickerViewModel, FrameViewModel frameViewModel, FileViewModel fileViewModel, TextTemplatesViewModel textTemplatesViewModel,
+            ICanvasContext canvasContext, IColorPickerContext colorPickerContext, IFrameContext frameContext, ITextTemplatesContext textTemplatesContext)
         {
             InitializeComponent();
-            
             canvas = canvas1;
             color = colorPickerViewModel;
-            layer = layerViewModel;
+            frame = frameViewModel;
             file = fileViewModel;
+            textTemp = textTemplatesViewModel;
+            this.canvasContext = canvasContext;
+            this.frameContext = frameContext;
+            this.colorPickerContext = colorPickerContext;
+            this.textTemplatesContext = textTemplatesContext;
             DataContext = mainViewModel;
             if (DataContext == null)
                 MessageBox.Show("DataContext не установлен!");
-            canvas.ActualWidth = MainDrawing.ActualWidth;
-            canvas.ActualHeight = MainDrawing.ActualHeight;
             
             MouseMove += MainDrawing_MouseMove;
             PreviewMouseUp += MainDrawing_MouseUp;
             GridCanvas.MouseWheel += MainDrawing_MouseWheel;
-            skiaCanvas = new SkiaCanvas(canvas, layer);
+            skiaCanvas = new SkiaCanvas(frame, textTemplatesViewModel, frameContext, canvasContext);
             GridCanvas.Children.Add(skiaCanvas);
             skiaCanvas.MouseDown += MainDrawing_MouseDown;
             skiaCanvas.MouseMove += MainDrawing_MouseMoveCursor;
+            skiaCanvas.StylusDown += SkiaCanvas_StylusDown;
+            skiaCanvas.StylusMove += SkiaCanvas_StylusMove;
+            TextEditor.LostFocus += TextEditor_LostFocus;
+            TextEditor.KeyDown += TextEditor_KeyDown;
+            TextEditor.TextChanged += TextEditor_TextChanged;
+            skiaCanvas.AllowDrop = true;
+            skiaCanvas.Drop += MainDrawing_Drop;
+            skiaCanvas.DragEnter += MainDrawing_DragEnter;
+            skiaCanvas.PreviewDragOver += MainDrawing_DragOver;
+        }
+
+        private void SkiaCanvas_StylusMove(object sender, StylusEventArgs e)
+        {
+            if (frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
+            UpdatePressure(e);
+            var pos1 = e.GetPosition(MainDrawing).ToSKPoint();
+            var pos = canvas.GetCanvasPoint(pos1);
+
+            if (currentDrag != DragMode.None)
+            {
+                var dx = pos.X - dragStart.X;
+                var dy = pos.Y - dragStart.Y;
+                SKPoint[] points = (SKPoint[])originalBounds.Clone();
+                SwitchDrag(dx, dy, points);
+                var path = new SKPath();
+                path.MoveTo(points[0]);
+                for (var i = 1; i < points.Length; i++)
+                {
+                    path.LineTo(points[i]);
+                }
+                path.Close();
+                frame.SelectFrame.Bounds = path;
+                canvas.OnPropertyChanged(nameof(canvas.EraserCursor));
+                return;
+            }
+
+            if (canvas.CurrentTool is TextTool && Keyboard.IsKeyDown(Key.LeftShift))
+            {
+                canvas.IsTextPosSnap = true;
+            }
+            else if (canvas.CurrentTool is TextTool)
+            {
+                canvas.IsTextPosSnap = false;
+            }
+
+            canvas.CurrentTool.OnMouseMove(canvasContext, pos, colorPickerContext, frameContext, textTemplatesContext);
+        }
+
+        private void SkiaCanvas_StylusDown(object sender, StylusDownEventArgs e)
+        {
+            if (frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
+            UpdatePressure(e);
+            var pos1 = e.GetPosition(MainDrawing).ToSKPoint();
+            var pos = canvas.GetCanvasPoint(pos1);
+            flag = true;
+
+            if (frame.SelectFrame != null && frame.SelectFrame.IsSelected)
+            {
+                if (frame.SelectFrame.LayerVM.SelectText != null)
+                    frame.SelectFrame.LayerVM.SelectText.IsSelected = false;
+                var handles = frame.SelectFrame.Bounds.Points;
+                for (int i = 0; i < handles.Length; i++)
+                {
+                    if (SKPoint.Distance(pos, handles[i]) < frame.SelectFrame.HandleSize)
+                    {
+                        currentDrag = DragMode.MovePoint;
+                        currentPoint = i;
+                        dragStart = pos;
+                        originalBounds = frame.SelectFrame.Bounds.Points;
+                        return;
+                    }
+                }
+                if (frame.SelectFrame.Bounds.Contains(pos.X, pos.Y))
+                {
+                    currentDrag = DragMode.MoveAll;
+                    dragStart = pos;
+                    originalBounds = frame.SelectFrame.Bounds.Points;
+                }
+                return;
+            }
+
+            if (pos.X <= canvas.CanvasWidth && pos.Y <= canvas.CanvasHeight && pos.X >= 0 && pos.Y >= 0)
+            {
+                if (canvas.CurrentTool is not TextTool)
+                    frame.SelectFrame.LayerVM.SaveState();
+                frame.SelectFrame.LayerVM.EnsureSurface();
+                canvas.TextEditor = TextEditor;
+                canvas.CurrentTool.OnMouseDown(canvasContext, pos, colorPickerContext, frameContext, textTemplatesContext);
+            }
+            flagStylus = true;
+        }
+
+        private void UpdatePressure(StylusEventArgs e)
+        {
+            var points = e.GetStylusPoints(MainDrawing);
+            if (points.Count > 0)
+            {
+                canvas.Pressure = points[0].PressureFactor;
+            }
         }
 
         private void MainDrawing_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -79,6 +200,8 @@ namespace Mangaka_Studio
 
         private void MainDrawing_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (flagStylus || frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
+            canvas.Pressure = 1f;
             var pos1 = e.GetPosition(MainDrawing);
             var dpi = VisualTreeHelper.GetDpi(MainDrawing);
             var physicalX = (float)(pos1.X * dpi.DpiScaleX);
@@ -94,23 +217,45 @@ namespace Mangaka_Studio
             if (Mouse.LeftButton != MouseButtonState.Pressed) return;
             flag = true;
             SKPoint pos = canvas.GetCanvasPoint(screenPoint);
+
+            if (frame.SelectFrame != null && frame.SelectFrame.IsSelected)
+            {
+                if (frame.SelectFrame.LayerVM.SelectText != null)
+                    frame.SelectFrame.LayerVM.SelectText.IsSelected = false;
+                var handles = frame.SelectFrame.Bounds.Points;
+                for (int i = 0; i < handles.Length; i++)
+                {
+                    if (SKPoint.Distance(pos, handles[i]) < frame.SelectFrame.HandleSize)
+                    {
+                        currentDrag = DragMode.MovePoint;
+                        currentPoint = i;
+                        dragStart = pos;
+                        originalBounds = frame.SelectFrame.Bounds.Points;
+                        return;
+                    }
+                }
+                if (frame.SelectFrame.Bounds.Contains(pos.X, pos.Y))
+                {
+                    currentDrag = DragMode.MoveAll;
+                    dragStart = pos;
+                    originalBounds = frame.SelectFrame.Bounds.Points;
+                }
+                return;
+            }
+
             if (pos.X <= canvas.CanvasWidth && pos.Y <= canvas.CanvasHeight && pos.X >= 0 && pos.Y >= 0)
             {
-                layer.SaveState();
-                canvas.OnMouseDown(canvas, pos, color, layer);
+                if (canvas.CurrentTool is not TextTool)    
+                    frame.SelectFrame.LayerVM.SaveState();
+                frame.SelectFrame.LayerVM.EnsureSurface();
+                canvas.TextEditor = TextEditor;
+                canvas.CurrentTool.OnMouseDown(canvasContext, pos, colorPickerContext, frameContext, textTemplatesContext);
             }
         }
 
         private void MainDrawing_MouseMove(object sender, MouseEventArgs e)
         {
-            if (canvas.CurrentTool is PipetteTool)
-            {
-                Mouse.OverrideCursor = new Cursor(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/cursor.cur")).Stream);
-            }
-            else
-            {
-                Mouse.OverrideCursor = Cursors.Pen;
-            }
+            if (flagStylus || frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
             var pos1 = e.GetPosition(MainDrawing);
             var dpi = VisualTreeHelper.GetDpi(MainDrawing);
             var physicalX = (float)(pos1.X * dpi.DpiScaleX);
@@ -126,7 +271,166 @@ namespace Mangaka_Studio
                 lastPos = canvas.GetCanvasPoint(screenPoint);
                 return;
             }
-            canvas.OnMouseMove(canvas, pos, color, layer);
+
+            if (currentDrag != DragMode.None)
+            {
+                var dx = pos.X - dragStart.X;
+                var dy = pos.Y - dragStart.Y;
+                SKPoint[] points = (SKPoint[])originalBounds.Clone();
+                SwitchDrag(dx, dy, points);
+                var path = new SKPath();
+                path.MoveTo(points[0]);
+                for (var i = 1; i < points.Length; i++)
+                {
+                    path.LineTo(points[i]);
+                }
+                path.Close();
+                frame.SelectFrame.Bounds = path;
+                canvas.OnPropertyChanged(nameof(canvas.EraserCursor));
+                return;
+            }
+
+            if (canvas.CurrentTool is TextTool && Keyboard.IsKeyDown(Key.LeftShift))
+            {
+                canvas.IsTextPosSnap = true;
+            }
+            else if (canvas.CurrentTool is TextTool)
+            {
+                canvas.IsTextPosSnap = false;
+            }
+            canvas.CurrentTool.OnMouseMove(canvasContext, pos, colorPickerContext, frameContext, textTemplatesContext);
+            //Debug.WriteLine($"MouseMove {e.GetPosition(this)}   " + DateTime.Now);
+            //base.OnMouseMove(e);
+        }
+
+        private void SwitchDrag(float dx, float dy, SKPoint[] originalBounds)
+        {
+            switch (currentDrag)
+            {
+                case DragMode.MoveAll:
+                    for (int i = 0; i < originalBounds.Length; i++)
+                    {
+                        var newX = originalBounds[i].X + dx;
+                        var newY = originalBounds[i].Y + dy;
+                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        {
+                            newX = Snap(newX, 10);
+                            newY = Snap(newY, 10);
+                        }
+                        originalBounds[i] = new SKPoint(newX, newY);
+                    }
+                    break;
+                case DragMode.MovePoint:
+                    if (frame.SelectFrame.FrameMode == FrameMode.Polyline)
+                    {
+                        var newX = originalBounds[currentPoint].X + dx;
+                        var newY = originalBounds[currentPoint].Y + dy;
+                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        {
+                            newX = Snap(newX, snap);
+                            newY = Snap(newY, snap);
+                        }
+                        originalBounds[currentPoint] = new SKPoint(newX, newY);
+                    }
+                    else if(frame.SelectFrame.FrameMode == FrameMode.Rectangle)
+                    {
+                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        {
+                            if (currentPoint == 0)
+                            {
+                                originalBounds[0].X = Snap(originalBounds[0].X + dx, snap);
+                                originalBounds[0].Y = Snap(originalBounds[0].Y + dy, snap);
+                                originalBounds[1].Y = Snap(originalBounds[1].Y + dy, snap);
+                                originalBounds[3].X = Snap(originalBounds[3].X + dx, snap);
+                            }
+                            else if (currentPoint == 1)
+                            {
+                                originalBounds[1].X = Snap(originalBounds[1].X + dx, snap);
+                                originalBounds[1].Y = Snap(originalBounds[1].Y + dy, snap);
+                                originalBounds[0].Y = Snap(originalBounds[0].Y + dy, snap);
+                                originalBounds[2].X = Snap(originalBounds[2].X + dx, snap);
+                            }
+                            else if (currentPoint == 2)
+                            {
+                                originalBounds[2].X = Snap(originalBounds[2].X + dx, snap);
+                                originalBounds[2].Y = Snap(originalBounds[2].Y + dy, snap);
+                                originalBounds[3].Y = Snap(originalBounds[3].Y + dy, snap);
+                                originalBounds[1].X = Snap(originalBounds[1].X + dx, snap);
+                            }
+                            else if (currentPoint == 3)
+                            {
+                                originalBounds[3].X = Snap(originalBounds[3].X + dx, snap);
+                                originalBounds[3].Y = Snap(originalBounds[3].Y + dy, snap);
+                                originalBounds[2].Y = Snap(originalBounds[2].Y + dy, snap);
+                                originalBounds[0].X = Snap(originalBounds[0].X + dx, snap);
+                            }
+                        }
+                        else
+                        {
+                            if (currentPoint == 0)
+                            {
+                                originalBounds[0].X += dx;
+                                originalBounds[0].Y += dy;
+                                originalBounds[1].Y += dy;
+                                originalBounds[3].X += dx;
+                            }
+                            else if (currentPoint == 1)
+                            {
+                                originalBounds[1].X += dx;
+                                originalBounds[1].Y += dy;
+                                originalBounds[0].Y += dy;
+                                originalBounds[2].X += dx;
+                            }
+                            else if (currentPoint == 2)
+                            {
+                                originalBounds[2].X += dx;
+                                originalBounds[2].Y += dy;
+                                originalBounds[3].Y += dy;
+                                originalBounds[1].X += dx;
+                            }
+                            else if (currentPoint == 3)
+                            {
+                                originalBounds[3].X += dx;
+                                originalBounds[3].Y += dy;
+                                originalBounds[2].Y += dy;
+                                originalBounds[0].X += dx;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        float Snap(float value, float step)
+        {
+            return (float)(Math.Round(value / step) * step);
+        }
+
+        private void TextEditor_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextEditor.Visibility = Visibility.Collapsed;
+            //if (frame.SelectFrame.LayerVM.SelectText != null)
+            //{
+            //    frame.SelectFrame.LayerVM.SelectText.Text = TextEditor.Text;
+            //    frame.SelectFrame.LayerVM.SelectText.IsSelected = false;
+            //    frame.SelectFrame.LayerVM.SelectText = null;
+            //}
+            canvas.IsTextEditor = false;
+        }
+
+        private void TextEditor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextEditor.Visibility = Visibility.Collapsed;
+                frame.SelectFrame.LayerVM.SelectText.Text = TextEditor.Text;
+                canvas.IsTextEditor = false;
+            }
+        }
+
+        private void TextEditor_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            canvas.OnPropertyChanged(nameof(canvas.EraserCursor));
         }
 
         private void MainDrawing_MouseMoveCursor(object sender, MouseEventArgs e)
@@ -142,8 +446,14 @@ namespace Mangaka_Studio
 
         private void MainDrawing_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (frame.SelectFrame.LayerVM.Layers.Count == 0) return;
+            if (currentDrag != DragMode.None)
+            {
+                currentDrag = DragMode.None;
+            }
             flag = false;
-            canvas.OnMouseUp(canvas, layer);
+            flagStylus = false;
+            canvas.CurrentTool.OnMouseUp(canvasContext, frameContext);
         }
 
         private void ColorPicker_MouseDown(object sender, MouseButtonEventArgs e)
@@ -196,22 +506,39 @@ namespace Mangaka_Studio
             var targetItem = GetListBoxItem(listBox, e.GetPosition(listBox));
             if (targetItem == null || targetItem.DataContext == draggedItem) return;
 
-            var targetLayer = (LayerModel)targetItem.DataContext;
-            var layers = listBox.ItemsSource as ObservableCollection<LayerModel>;
+            //var targetLayer = (LayerModel)targetItem.DataContext;
 
-            if (layers != null)
+            if (draggedItem is LayerModel draggedLayer && targetItem.DataContext is LayerModel targetLayer)
             {
-                int oldIndex = layers.IndexOf(draggedItem);
-                int newIndex = layers.IndexOf(targetLayer);
-
-                if (oldIndex != newIndex)
+                var layers = listBox.ItemsSource as ObservableCollection<LayerModel>;
+                if (layers != null)
                 {
-                    layers.Move(oldIndex, newIndex);
-                }
-            }
-            layer.OnPropertyChanged(nameof(layers));
-        }
+                    int oldIndex = layers.IndexOf(draggedLayer);
+                    int newIndex = layers.IndexOf(targetLayer);
 
+                    if (oldIndex != newIndex)
+                    {
+                        layers.Move(oldIndex, newIndex);
+                    }
+                }
+                frame.SelectFrame.LayerVM.OnPropertyChanged(nameof(layers));
+            }
+            else if (draggedItem is FrameLayerModel draggedFrame && targetItem.DataContext is FrameLayerModel targetFrame)
+            {
+                var layers = listBox.ItemsSource as ObservableCollection<FrameLayerModel>;
+                if (layers != null)
+                {
+                    int oldIndex = layers.IndexOf(draggedFrame);
+                    int newIndex = layers.IndexOf(targetFrame);
+
+                    if (oldIndex != newIndex)
+                    {
+                        layers.Move(oldIndex, newIndex);
+                    }
+                }
+                frame.SelectFrame.LayerVM.OnPropertyChanged(nameof(layers));
+            }
+        }
         private void ListBox_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && !flag)
@@ -223,7 +550,7 @@ namespace Mangaka_Studio
                 if (item != null)
                 {
                     if (IsClickOnCheckBox(item, e)) return;
-                    draggedItem = (LayerModel)item.DataContext;
+                    draggedItem = item.DataContext;
 
                     DragDrop.DoDragDrop(item, draggedItem, DragDropEffects.Move);
                 }
@@ -304,6 +631,10 @@ namespace Mangaka_Studio
             {
                 textBlock.Visibility = Visibility.Collapsed;
                 var textBox = stackPanel.FindName("LayerNameTextBox") as TextBox;
+                if (textBox == null)
+                {
+                    textBox = stackPanel.FindName("FrameNameTextBox") as TextBox;
+                }
                 if (textBox != null)
                 {
                     isEdit = true;
@@ -328,8 +659,16 @@ namespace Mangaka_Studio
                 if (textBlock != null)
                 {
                     textBlock.Visibility = Visibility.Visible;
-                    layer.SelectLayer.Name = textBox.Text;
-
+                    frame.SelectFrame.LayerVM.SelectLayer.Name = textBox.Text;
+                }
+                else
+                {
+                    textBlock = stackPanel.FindName("FrameNameTextBlock") as TextBlock;
+                    if (textBlock != null)
+                    {
+                        textBlock.Visibility = Visibility.Visible;
+                        frame.SelectFrame.Name = textBox.Text;
+                    }
                 }
             }
         }
@@ -337,7 +676,7 @@ namespace Mangaka_Studio
         private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             var focusedElement = Keyboard.FocusedElement as UIElement;
-            if (focusedElement is TextBox textBox && textBox.Name == "LayerNameTextBox")
+            if (focusedElement is TextBox textBox && (textBox.Name == "LayerNameTextBox" || textBox.Name == "FrameNameTextBox"))
             {
                 var clickedElement = e.OriginalSource as DependencyObject;
                 if (!IsParentOf(textBox, clickedElement))
@@ -367,7 +706,7 @@ namespace Mangaka_Studio
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (layer.IsModified) // Проверяем флаг изменений
+            if (frame.SelectFrame.LayerVM.IsModified) // Проверяем флаг изменений
             {
                 var result = MessageBox.Show(
                     "Файл содержит несохраненные изменения. Хотите сохранить их?",
@@ -388,7 +727,7 @@ namespace Mangaka_Studio
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (layer.IsModified)
+            if (frame.SelectFrame.LayerVM.IsModified)
             {
                 var result = MessageBox.Show(
                     "Файл содержит несохраненные изменения. Хотите сохранить их?",
@@ -411,5 +750,84 @@ namespace Mangaka_Studio
                 file.NewFile(dialog.width, dialog.height);
             }
         }
+
+        private void Image_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && !flag)
+            {
+                if (sender is Image image && image.DataContext is string path)
+                {
+                    DragDrop.DoDragDrop(image, path, DragDropEffects.Copy);
+                }
+            }
+        }
+
+        private void MainDrawing_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string droppedPath = (string)e.Data.GetData(DataFormats.StringFormat);
+
+                var pos1 = e.GetPosition(MainDrawing);
+                var dpi = VisualTreeHelper.GetDpi(MainDrawing);
+                var physicalX = (float)(pos1.X * dpi.DpiScaleX);
+                var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
+                SKPoint screenPoint = new SKPoint(physicalX, physicalY);
+                SKPoint pos = canvas.GetCanvasPoint(screenPoint);
+                using var bitmap = LoadBitmapFromPackUri(droppedPath);
+                if (bitmap != null)
+                {
+                    float width = bitmap.Width;
+                    float height = bitmap.Height;
+
+                    var bounds = new SKRect(
+                        pos.X - width / 2,
+                        pos.Y - height / 2,
+                        pos.X + width / 2,
+                        pos.Y + height / 2
+                    );
+
+                    textTemp.IsVisibleEditText = "Collapsed";
+                    textTemp.TextModeStr = "";
+                    textTemp.IsHitTextDel = false;
+                    textTemp.OpacityBoundsTextDel = 0.5f;
+                    if (frame.SelectFrame.LayerVM.SelectTemplate != null)
+                    {
+                        frame.SelectFrame.LayerVM.SelectTemplate.IsSelected = false;
+                        frame.SelectFrame.LayerVM.SelectTemplate = null;
+                    }
+                    frame.SelectFrame.LayerVM.AddTemplate(bounds, droppedPath);
+                }
+            }
+        }
+
+        private SKBitmap LoadBitmapFromPackUri(string packUri)
+        {
+            var uri = new Uri(packUri, UriKind.Absolute);
+            StreamResourceInfo resourceInfo = System.Windows.Application.GetResourceStream(uri);
+            if (resourceInfo != null)
+            {
+                using var stream = resourceInfo.Stream;
+                return SKBitmap.Decode(stream);
+            }
+            return null;
+        }
+
+        private void MainDrawing_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effects = e.Data.GetDataPresent(DataFormats.StringFormat)
+                ? DragDropEffects.Copy
+                : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void MainDrawing_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = e.Data.GetDataPresent(DataFormats.StringFormat)
+                ? DragDropEffects.Copy
+                : DragDropEffects.None;
+            e.Handled = true;
+        }
+
     }
 }

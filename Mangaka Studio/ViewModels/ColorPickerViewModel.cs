@@ -1,5 +1,4 @@
-﻿using Mangaka_Studio.Commands;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

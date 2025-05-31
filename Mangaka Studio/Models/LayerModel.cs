@@ -14,5 +14,7 @@ namespace Mangaka_Studio.Models
         public SKImage Image { get; set; }
         public bool IsVisible { get; set; } = true;
         public float Opacity { get; set; } = 1.0f;
+        public List<TextModel> ListText { get; set; } = new List<TextModel>();
+        public List<TemplateModel> ListTemplate { get; set; } = new List<TemplateModel>();
     }
 }

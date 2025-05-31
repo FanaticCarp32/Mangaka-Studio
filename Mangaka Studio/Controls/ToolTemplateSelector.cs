@@ -14,11 +14,13 @@ namespace Mangaka_Studio.Controls
     {
         public DataTemplate PenToolTemplate { get; set; }
         public DataTemplate EraserToolTemplate { get; set; }
+        public DataTemplate TextToolTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (item is PenToolSettingsViewModel) return PenToolTemplate;
             if (item is EraserToolSettingsViewModel) return EraserToolTemplate;
+            if (item is TextToolSettingsViewModel) return TextToolTemplate;
             return null;
         }
     }
