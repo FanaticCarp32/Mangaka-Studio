@@ -16,6 +16,7 @@
     <None Remove="Resources\icons8-настройки.png" />
     <None Remove="Resources\icons8-пипетка.png" />
     <None Remove="Resources\icons8-прямоугольная.png" />
+    <None Remove="Resources\question-mark.png" />
     <None Remove="Resources\soft-eraser.png" />
     <None Remove="Resources\Templates\BubbleTransparent2.png" />
     <None Remove="Resources\Templates\BubbleTransparent3.png" />
@@ -35,6 +36,7 @@
 	<ItemGroup>
     <Content Include="Resources\09937cff-bec9-4632-adb8-109a03fe1a26.ico" />
     <Resource Include="Resources\icon-текст.png" />
+    <Resource Include="Resources\question-mark.png" />
     <Resource Include="Resources\Templates\Bubbles\BubbleTransparent1.png" />
   </ItemGroup>
 

@@ -23,9 +23,6 @@ namespace Mangaka_Studio.ViewModels
         private int frameWidth;
         private int frameHeight;
         private Point lastWH = new Point(1000, 600);
-        /*private Stack<(LayerModel Layer, SKImage Image)> undoStack = new Stack<(LayerModel Layer, SKImage Image)>();
-        private Stack<(LayerModel Layer, SKImage Image)> redoStack = new Stack<(LayerModel Layer, SKImage Image)>();
-        */
         private Stack<(ObservableCollection<LayerModel>, int)> undoStack = new();
         private Stack<(ObservableCollection<LayerModel>, int)> redoStack = new();
         private ObservableCollection<LayerModel> layers = new();
@@ -45,27 +42,13 @@ namespace Mangaka_Studio.ViewModels
             get => selectLayer;
             set
             {
-                //if (flagDel)
-                //    PrevSelectLayer = null;
-                //else
-                //    PrevSelectLayer = SelectLayer;
                 selectLayer = value;
-                //if (SelectLayer == null)
-                //    PrevSelectLayer = null;
 
                 if (baseSurface != null && SelectLayer != null)
                 {
-                    //var screenshot = baseSurface.Snapshot();
-                    //Layers.Where(layer => layer.Id == PrevSelectLayer.Id).ToList()[0].Image = screenshot;
                     baseSurface.Canvas.Clear(SKColors.Transparent);
                     baseSurface.Canvas.DrawImage(SelectLayer.Image, 0, 0);
                 }
-                //if (baseSurface != null && flagDel && SelectLayer != null)
-                //{
-                //    flagDel = false;
-                //    baseSurface.Canvas.Clear(SKColors.Transparent);
-                //    baseSurface.Canvas.DrawImage(SelectLayer.Image, 0, 0);
-                //}
                 OnPropertyChanged(nameof(SelectLayer));
             }
         }
@@ -111,7 +94,6 @@ namespace Mangaka_Studio.ViewModels
             canvas = canvasViewModel;
             lastWH.X = canvas.CanvasWidth;
             lastWH.Y = canvas.CanvasHeight;
-            //Layers.CollectionChanged += (s, e) => IsModified = true;
             AddLayer(false);
             AddLayerCommand = new RelayCommand(_ => AddLayer(true));
             DeleteLayerCommand = new RelayCommand(_ => DeleteLayer());

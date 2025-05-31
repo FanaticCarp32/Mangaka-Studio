@@ -3,10 +3,9 @@
   <Class Name="Mangaka_Studio.MainWindow" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="20.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>KADBRYgMAAEAQAIAAJgCAwECQHAQCAOSTGgAiwEAHIM=</HashCode>
+      <HashCode>KADBRYgMAAEAQAIAAJgCAwECQHAQCAOSTGgACwEAHIM=</HashCode>
       <FileName>Views\MainWindow.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.Views.NewFileDialog" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9.75" Y="3.5" Width="1.5" />
@@ -14,12 +13,11 @@
       <HashCode>AAAAAACAAAIBAAQAQAAAAAEAAAAAAAIAEAAAgAAAAAA=</HashCode>
       <FileName>Views\NewFileDialog.xaml.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.Controls.Adapters.CanvasContextAdapter" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAAAgEACAAAAAAAAAICAAAKCAAAAAAAAAACAqAAAAA=</HashCode>
+      <HashCode>AQAAAgEACAACAAEAIAICAAAKmAAAAADCIAACAqIAAAA=</HashCode>
       <FileName>Controls\Adapters\CanvasContextAdapter.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -103,7 +101,6 @@
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controls\Converters\ColorStringToSKColorConverter.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.Controls.Converters.DrawingToolsConverter" Collapsed="true">
     <Position X="18.5" Y="0.5" Width="1.5" />
@@ -118,7 +115,6 @@
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controls\Converters\HueToColorConverter.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.Controls.Converters.SKColorConverter" Collapsed="true">
     <Position X="16.75" Y="3.5" Width="1.5" />
@@ -133,7 +129,6 @@
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controls\Converters\SKColorToBrushConverter.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.Controls.Converters.SKPathConverter" Collapsed="true">
     <Position X="9.75" Y="4.5" Width="1.5" />
@@ -155,7 +150,6 @@
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controls\Converters\ToolTypeConverter .cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.Controls.Renders.Renderer" Collapsed="true">
     <Position X="15" Y="3.5" Width="1.5" />
@@ -167,7 +161,7 @@
   <Class Name="Mangaka_Studio.Controls.Renders.SkiaCanvas" Collapsed="true">
     <Position X="20.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EABAAAABACAgAAgAAAAAAgABAAAIAKAAAAAADQCAgAA=</HashCode>
+      <HashCode>EABAAAABACAgAAgAAAAAAgABAEAIACAAAAAADQCAgAA=</HashCode>
       <FileName>Controls\Renders\SkiaCanvas.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -268,7 +262,6 @@
       <HashCode>QQAAAiMIEQIiEAHAIAITAACKmgEABALKpgADJqMIAAA=</HashCode>
       <FileName>ViewModels\CanvasViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.ColorPickerViewModel" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="15" Y="0.5" Width="1.5" />
@@ -276,7 +269,6 @@
       <HashCode>GIMSMQgBMAAAAgAAIAYAAxAGgAAAQKCQBACgvxSBAgU=</HashCode>
       <FileName>ViewModels\ColorPickerViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.EraserHardToolSettingsViewModel" Collapsed="true">
     <Position X="2.75" Y="3.25" Width="1.5" />
@@ -305,15 +297,13 @@
       <HashCode>AAAAAAAAAAAAAAgAoIAAAAAIgEAAAMAABAAAAgAGAAA=</HashCode>
       <FileName>ViewModels\FileViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.FrameViewModel" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="18.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAEEQAAACAAAAwFpiAIAAAGgAIEQAOQhAACBSAAAgU=</HashCode>
+      <HashCode>ABAGEQAAAiAAAAwFpiAIAAAGgBIEQAOQhAACBSAQAgU=</HashCode>
       <FileName>ViewModels\FrameViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.LayerViewModel" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="16.75" Y="2.5" Width="1.5" />
@@ -321,7 +311,6 @@
       <HashCode>AgCFEAAAAAAARmABIAkKABADgIBgYkWkhAAiBDEAAgA=</HashCode>
       <FileName>ViewModels\LayerViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.MainViewModel" Collapsed="true">
     <Position X="18.5" Y="2.5" Width="1.5" />
@@ -343,7 +332,6 @@
       <HashCode>AAAAAAAAAAACAAQAAEAEAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModels\RelayCommand.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.TextTemplatesViewModel" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="18.5" Y="4.5" Width="1.5" />
@@ -351,7 +339,6 @@
       <HashCode>AIKSAAACkAAABIgIYAQKAgIlggABZQJRAAACBQIAkAQ=</HashCode>
       <FileName>ViewModels\TextTemplatesViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.TextToolSettingsViewModel" Collapsed="true">
     <Position X="5" Y="1.75" Width="1.5" />
@@ -374,7 +361,6 @@
       <HashCode>AAAAAAAAAAAAAACBIAAAAAAAgAAAAAAAAAAAAAAAAIE=</HashCode>
       <FileName>ViewModels\ToolsSettingsViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Mangaka_Studio.ViewModels.ToolsViewModel" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="11.5" Y="5.5" Width="1.5" />
@@ -382,12 +368,11 @@
       <HashCode>AAAAAAAgAAAAAAEAIAAAAAACgAAAAAgAwAAAACCAAAE=</HashCode>
       <FileName>ViewModels\ToolsViewModel.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Interface Name="Mangaka_Studio.Interfaces.ICanvasContext" Collapsed="true">
     <Position X="9.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAAAgEACAAAAAAAAAICAAAICAAAAAAAAAACAqAAAAA=</HashCode>
+      <HashCode>AQAAAgEACAACAAEAIAICAAAImAAAAADCIAACAqIAAAA=</HashCode>
       <FileName>Interfaces\ICanvasContext.cs</FileName>
     </TypeIdentifier>
   </Interface>

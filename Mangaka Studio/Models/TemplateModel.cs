@@ -13,7 +13,6 @@ namespace Mangaka_Studio.Models
     public class TemplateModel
     {
         private SKBitmap bitmap;
-        //public float Rotate { get; set; } = 0f;
         public SKRect Bounds { get; set; }
         public bool IsSelected { get; set; } = false;
 
@@ -67,7 +66,6 @@ namespace Mangaka_Studio.Models
             }
             catch
             {
-                // Обработка ошибок загрузки
                 bitmap = null;
             }
         }

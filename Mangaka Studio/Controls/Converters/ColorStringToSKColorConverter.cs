@@ -28,7 +28,7 @@ namespace Mangaka_Studio.Controls.Converters
             {
                 return skColor.ToString();
             }
-            return "#000000"; // Default black
+            return "#000000";
         }
     }
 }

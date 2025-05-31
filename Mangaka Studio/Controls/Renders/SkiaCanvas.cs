@@ -180,19 +180,6 @@ namespace Mangaka_Studio.Controls.Renders
 
         private void LayerViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //if (e.PropertyName == nameof(LayerViewModel.SelectLayer))
-            //{
-            //    if (layerViewModel.baseSurface != null && layerViewModel.PrevSelectLayer != null)
-            //    {
-            //        var screenshot = layerViewModel.baseSurface.Snapshot();
-            //        //if (layerViewModel.Layers.Where(layer => layer.Id == layerViewModel.PrevSelectLayer.Id).ToList().Count > 0)
-            //        layerViewModel.Layers.Where(layer => layer.Id == layerViewModel.PrevSelectLayer.Id).ToList()[0].Image = screenshot;
-            //        layerViewModel.ChangeSelectLayer = false;
-            //        layerViewModel.baseSurface.Canvas.Clear(SKColors.Transparent);
-            //        layerViewModel.baseSurface.Canvas.DrawImage(layerViewModel.SelectLayer.Image, 0, 0);
-            //    }
-            //}
-            //layerViewModel.SelectLayer.Image = screenshot;
             if (e.PropertyName == nameof(LayerViewModel.SelectText))
             {
                 if (frameViewModel.SelectFrame.LayerVM.SelectText != null && frameViewModel.SelectFrame.LayerVM.SelectText.IsSelected && canvasContext.IsTextEditor)
@@ -278,7 +265,7 @@ namespace Mangaka_Studio.Controls.Renders
             }
 
             canvas.Save();
-            if (canvasContext.CurrentTool is PipetteTool)
+            if (canvasContext.CurrentTool is PipetteTool && frameViewModel.SelectFrame.LayerVM.Screenshot != null)
             {
                 canvas.DrawImage(frameViewModel.SelectFrame.LayerVM.Screenshot, 0, 0);
                 DrawPipette(canvas);

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -115,6 +116,17 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
+        private string config = "";
+        public string Config
+        {
+            get => config;
+            set
+            {
+                config = value;
+                OnPropertyChanged(nameof(Config));
+            }
+        }
+
         public bool IsDrawBoundsVM
         {
             get => SelectFrame.IsDrawBounds;
@@ -145,12 +157,24 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
+        private bool isExpandedHelp;
+        public bool IsExpandedHelp
+        {
+            get => isExpandedHelp;
+            set
+            {
+                isExpandedHelp = value;
+                OnPropertyChanged(nameof(IsExpandedHelp));
+            }
+        }
+
         public SKRect? DirtyRect { get; set; } = null;
 
         public ICommand AddFrameCommand { get; }
         public ICommand DeleteFrameCommand { get; }
         public ICommand ToggleVisibilityCommand { get; }
         public ICommand ToggleExpandCommand { get; }
+        public ICommand ToggleExpandHelpCommand { get; }
         public ICommand SelectFrameModeCommand { get; }
         public ICommand GenerateFrameCommand { get; }
 
@@ -160,18 +184,18 @@ namespace Mangaka_Studio.ViewModels
             lastWH.X = canvas.CanvasWidth;
             lastWH.Y = canvas.CanvasHeight;
             var frameFactory = new FrameLayerModelFactory();
-            //Layers.CollectionChanged += (s, e) => IsModified = true;
             AddFrame();
             AddFrameCommand = new RelayCommand(_ => AddFrame());
             DeleteFrameCommand = new RelayCommand(_ => DeleteFrame());
             ToggleVisibilityCommand = new RelayCommand(_ => ToggleVisibility());
             ToggleExpandCommand = new RelayCommand(_ => IsExpanded = !IsExpanded);
+            ToggleExpandHelpCommand = new RelayCommand(_ => IsExpandedHelp = !IsExpandedHelp);
             SelectFrameModeCommand = new RelayCommand(param => SelectFrameMode((FrameMode)param));
             GenerateFrameCommand = new RelayCommand(_ =>
             {
-                string config = "3x2 + 1x1";
+                var frames = frameFactory.GenerateFromConfig(Config, canvas.CanvasWidth, canvas.CanvasHeight, canvas);
+                if (frames == null) return;
                 Frames.Clear();
-                var frames = frameFactory.GenerateFromConfig(config, canvas.CanvasWidth, canvas.CanvasHeight, canvas);
                 foreach (var frame in frames)
                 {
                     Frames.Add(frame);
@@ -205,14 +229,11 @@ namespace Mangaka_Studio.ViewModels
                 tempSurface.Canvas.Translate(-frame.Bounds.Bounds.Left, -frame.Bounds.Bounds.Top);
                 tempSurface.Canvas.ClipPath(frame.Bounds);
                 tempSurface.Canvas.DrawImage(frame.LayerVM.GetCompositedImage(), 0, 0);
-                //if (frame.Id != 0)
+                if (frame.IsDrawBounds)
                 {
-                    if (frame.IsDrawBounds)
+                    using (var boundsPaint = new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = (float)frame.BoundsWidth, Color = SKColors.Black, IsAntialias = true })
                     {
-                        using (var boundsPaint = new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = (float)frame.BoundsWidth, Color = SKColors.Black, IsAntialias = true })
-                        {
-                            tempSurface.Canvas.DrawPath(frame.Bounds, boundsPaint);
-                        }
+                        tempSurface.Canvas.DrawPath(frame.Bounds, boundsPaint);
                     }
                 }
                 frameSurface.Canvas.DrawSurface(tempSurface, frame.Bounds.Bounds.Left, frame.Bounds.Bounds.Top);

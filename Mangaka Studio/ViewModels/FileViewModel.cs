@@ -334,8 +334,7 @@ namespace Mangaka_Studio.ViewModels
             var newLayer = new LayerModel
             {
                 Id = id,
-                Name = $"Слой {id}",
-                //Image = SKImage.Create(new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                Name = $"Слой {id}"
             };
             var imageInfo = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using (var surface = SKSurface.Create(imageInfo))

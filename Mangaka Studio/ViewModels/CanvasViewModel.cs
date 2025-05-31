@@ -301,7 +301,6 @@ namespace Mangaka_Studio.ViewModels
         {
             var matrix = SKMatrix.CreateIdentity();
 
-            // Прямой порядок: сначала масштаб, потом поворот, потом смещение
             matrix = SKMatrix.Concat(matrix, SKMatrix.CreateScale((float)Scale, (float)Scale, ScalePos.X, ScalePos.Y));
             matrix = SKMatrix.Concat(matrix, SKMatrix.CreateRotationDegrees((float)Rotate, CanvasWidth / 2, CanvasHeight / 2));
             matrix = SKMatrix.Concat(matrix, SKMatrix.CreateTranslation((float)OffsetX, (float)OffsetY));

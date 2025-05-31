@@ -25,8 +25,6 @@ namespace Mangaka_Studio.Controls.Tools
         public override void OnMouseDown(ICanvasContext canvasViewModel, SKPoint pos, IColorPickerContext colorPickerViewModel, IFrameContext frameViewModel, ITextTemplatesContext textTemplatesViewModel)
         {
             frameViewModel.SelectFrame.LayerVM.IsModified = true;
-            //layerViewModel.tempSurface.Canvas.DrawSurface(layerViewModel.baseSurface, 0, 0);
-            //layerViewModel.baseSurface.Canvas.Clear();
             pointBuffer.Enqueue(pos);
             isErasing = true;
             canvasViewModel.LastErasePoint = pos;
@@ -63,15 +61,13 @@ namespace Mangaka_Studio.Controls.Tools
             var eraseSettings = Settings as EraserSoftToolSettingsViewModel;
             using (var paint = new SKPaint
             {
-                Color = new SKColor(0, 0, 0, eraseSettings.Transparent), // Прозрачность
+                Color = new SKColor(0, 0, 0, eraseSettings.Transparent),
                 StrokeWidth = Math.Max(eraseSettings.StrokeWidth * canvasViewModel.Pressure, 1f),
-                BlendMode = SKBlendMode.DstOut, // Стирание альфа-композитингом
+                BlendMode = SKBlendMode.DstOut,
                 Style = SKPaintStyle.Stroke,
                 StrokeCap = SKStrokeCap.Round,
                 IsAntialias = eraseSettings.IsAntialias,
-                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, Settings.StrokeWidth * eraseSettings.BlurRad * 0.1f),
-                //Shader = SKShader.CreateRadialGradient(erasePoint, Settings.StrokeWidth / 2,
-                //    new[] { SKColors.Transparent, SKColors.Black }, null, SKShaderTileMode.Repeat)
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, Settings.StrokeWidth * eraseSettings.BlurRad * 0.1f)
             })
             {
                 AddBezierSmoothedPoint(erasePoint, frameViewModel.SelectFrame.LayerVM.baseSurface.Canvas, paint);

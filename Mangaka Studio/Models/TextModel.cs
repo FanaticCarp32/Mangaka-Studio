@@ -225,7 +225,6 @@ namespace Mangaka_Studio.Models
             var center = new SKPoint(rect.MidX, rect.MidY);
             var angleRad = angleDegrees * (MathF.PI / 180f);
 
-            // Вращаем 4 угла
             SKPoint[] corners =
             {
                 RotatePoint(new SKPoint(rect.Left, rect.Top), center, angleRad),
@@ -234,7 +233,6 @@ namespace Mangaka_Studio.Models
                 RotatePoint(new SKPoint(rect.Left, rect.Bottom), center, angleRad)
             };
 
-            // Находим охватывающий прямоугольник
             float minX = corners.Min(p => p.X);
             float minY = corners.Min(p => p.Y);
             float maxX = corners.Max(p => p.X);

@@ -32,10 +32,7 @@ namespace Mangaka_Studio.Models
             Name = model.Name;
             Bounds = model.Bounds;
             IsVisible = model.IsVisible;
-            LayerVM = new LayerViewModel(canvas)
-            {
-                //Layers = model.Layers
-            };
+            LayerVM = new LayerViewModel(canvas);
         }
     }
 }

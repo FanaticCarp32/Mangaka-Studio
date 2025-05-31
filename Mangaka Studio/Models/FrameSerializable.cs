@@ -12,7 +12,6 @@ namespace Mangaka_Studio.Models
     {
         public int Id { get; set; }
         public FrameModel Model { get; set; }
-        //public LayerViewModel LayerVM { get; set; }
         public string Name { get; set; }
         public SKPath Bounds { get; set; }
         public bool IsDrawBounds { get; set; }

@@ -37,14 +37,12 @@ namespace Mangaka_Studio.Controls.Renders
                 tempSurface.Canvas.Translate(-frame.Bounds.Bounds.Left, -frame.Bounds.Bounds.Top);
                 tempSurface.Canvas.ClipPath(frame.Bounds);
                 tempSurface.Canvas.DrawImage(frame.LayerVM.GetCompositedImage(), 0, 0);
-                //if (frame.Id != 0)
+                
+                if (frame.IsDrawBounds)
                 {
-                    if (frame.IsDrawBounds)
+                    using (var boundsPaint = new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = frame.BoundsWidth, Color = SKColors.Black, IsAntialias = true })
                     {
-                        using (var boundsPaint = new SKPaint { Style = SKPaintStyle.Stroke, StrokeWidth = frame.BoundsWidth, Color = SKColors.Black, IsAntialias = true })
-                        {
-                            tempSurface.Canvas.DrawPath(frame.Bounds, boundsPaint);
-                        }
+                        tempSurface.Canvas.DrawPath(frame.Bounds, boundsPaint);
                     }
                 }
                 frameSurface.Canvas.DrawSurface(tempSurface, frame.Bounds.Bounds.Left, frame.Bounds.Bounds.Top);

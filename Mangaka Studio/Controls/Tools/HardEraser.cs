@@ -60,9 +60,9 @@ namespace Mangaka_Studio.Controls.Tools
             var eraseHardSettings = Settings as EraserHardToolSettingsViewModel;
             using (var paint = new SKPaint
             {
-                Color = SKColors.Transparent, // Прозрачность
+                Color = SKColors.Transparent,
                 StrokeWidth = Math.Max(eraseHardSettings.StrokeWidth * canvasViewModel.Pressure, 1f),
-                BlendMode = SKBlendMode.Clear, // Стирание альфа-композитингом
+                BlendMode = SKBlendMode.Clear,
                 Style = SKPaintStyle.Stroke,
                 StrokeCap = SKStrokeCap.Round,
                 IsAntialias = eraseHardSettings.IsAntialias

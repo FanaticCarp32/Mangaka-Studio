@@ -199,6 +199,118 @@
         </Setter>
     </Style>
 
+    <Style x:Key="VSMCheckBoxEyeToggle" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="{StaticResource BrushMediumDark}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid x:Name="RootGrid">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="EyeClosed"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="1" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="EyeOpen"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0" Duration="0:0:0.15"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="EyeOpen"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="1" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="EyeClosed"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0" Duration="0:0:0.15"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="OuterBorder"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                    To="White" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="OuterBorder"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                    To="Black" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Border x:Name="BackgroundBorder"
+                            CornerRadius="5"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            Margin="3">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"/>
+                            </Border.Effect>
+                        </Border>
+
+                        <Path x:Name="EyeOpen"
+                          Data="M1,10 C4,2 12,2 15,10 C12,18 4,18 1,10 M8,13 A3,3 0 1 1 8,7 A3,3 0 1 1 8,13"
+                          Stroke="White"
+                          StrokeThickness="1.5"
+                          Fill="White"
+                          Stretch="Uniform"
+                          Opacity="0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Width="21" Height="21"
+                          Margin="5"
+                          RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <ScaleTransform ScaleX="0.6" ScaleY="0.6"/>
+                            </Path.RenderTransform>
+                        </Path>
+
+                        <Path x:Name="EyeClosed"
+                          Data="M1,10 C4,2 12,2 15,10 C12,18 4,18 1,10 M2,2 L14,18 M14,2 L2,18"
+                          Stroke="White"
+                          StrokeThickness="1.5"
+                          Fill="Transparent"
+                          Stretch="Uniform"
+                          Opacity="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Width="21" Height="21"
+                          Margin="5"
+                          RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <ScaleTransform ScaleX="0.6" ScaleY="0.6"/>
+                            </Path.RenderTransform>
+                        </Path>
+
+                        <Border x:Name="OuterBorder"
+                            CornerRadius="5"
+                            BorderBrush="Transparent"
+                            BorderThickness="2"
+                            Margin="0"
+                            Background="Transparent">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2"/>
+                            </Border.Effect>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
     <!-- Стиль Expander -->
     <Style x:Key="ModernExpander" TargetType="Expander">
         <Setter Property="Foreground" Value="White" />
@@ -438,6 +550,13 @@
         <Setter Property="BorderBrush" Value="Black" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate>
+                    <AdornedElementPlaceholder/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -470,6 +589,21 @@
                             <Setter Property="Background" Value="{StaticResource BrushLight}"></Setter>
                             <Setter Property="Foreground" Value="Black"></Setter>
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Validation.HasError" Value="True"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="Red"/>
+                        </MultiTrigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Validation.HasError" Value="True"/>
+                                <Condition Property="IsFocused" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="Red"/>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -848,7 +982,7 @@ EraserSoftToolTemplate="{StaticResource EraserSoftToolTemplate}"></local:ToolEra
     <Style x:Key="LayersIconButton" TargetType="local:IconButton">
         <Setter Property="Background" Value="{StaticResource BrushMediumDark}"></Setter>
         <Setter Property="Foreground" Value="White"></Setter>
-        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="FontSize" Value="14"></Setter> 
         <Setter Property="Cursor" Value="Hand"></Setter>
         <Setter Property="Margin" Value="2"></Setter>
         <Setter Property="Padding" Value="2"></Setter>
