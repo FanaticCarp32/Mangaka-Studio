@@ -14,6 +14,8 @@
         Background="Transparent"
         Deactivated="Window_Deactivated"
         PreviewMouseDown="Window_PreviewMouseDown"
+        KeyUp="OnKeyUp"
+        KeyDown="OnKeyDown"
         Closing="Window_Closing">
     <Window.InputBindings>
         <KeyBinding Modifiers="Ctrl" Key="Z" Command="{Binding FrameVM.SelectFrame.LayerVM.UndoCommand}"></KeyBinding>
@@ -202,9 +204,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="1.5*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" DataContext="{Binding CanvasVM}">
                 <Grid>
@@ -296,7 +298,7 @@
                     <CheckBox Grid.Column="2" HorizontalAlignment="Center" Style="{StaticResource VSMCheckBoxEyeToggle}" IsChecked="{Binding GeneralView}" Margin="0,0,5,0" VerticalAlignment="Center"/>
                 </Grid>
                 <ListBox Grid.Row="1" ItemsSource="{Binding Frames}" SelectedItem="{Binding SelectFrame}" ItemContainerStyle="{StaticResource LayerListBoxItem}" 
-                         BorderThickness="1" BorderBrush="Transparent" Width="200" Height="200" Background="Transparent"
+                         BorderThickness="1" BorderBrush="Transparent" Width="200" Background="Transparent"
                          ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True"
                          DragEnter="ListBox_DragEnter" DragOver="ListBox_DragOver" Drop="ListBox_Drop" PreviewMouseMove="ListBox_PreviewMouseMove">
                     <ListBox.ItemTemplate>
@@ -514,7 +516,7 @@
 
                 <TextBlock Grid.Row="0" Text="Слои" Style="{StaticResource MainFont}"/>
                 <ListBox Grid.Row="1" ItemsSource="{Binding SelectFrame.LayerVM.Layers}" SelectedItem="{Binding SelectFrame.LayerVM.SelectLayer}" ItemContainerStyle="{StaticResource LayerListBoxItem}" 
-                         BorderThickness="1" BorderBrush="Transparent" Width="200" Height="200" Background="Transparent"
+                         BorderThickness="1" BorderBrush="Transparent" Width="200" Background="Transparent"
                          ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True"
                          DragEnter="ListBox_DragEnter" DragOver="ListBox_DragOver" Drop="ListBox_Drop" PreviewMouseMove="ListBox_PreviewMouseMove">
                     <ListBox.ItemTemplate>

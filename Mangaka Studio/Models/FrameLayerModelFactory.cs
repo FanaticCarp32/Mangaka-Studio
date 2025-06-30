@@ -61,7 +61,7 @@ namespace Mangaka_Studio.Models
                         var model = new FrameModel
                         {
                             Id = idCounter,
-                            Name = $"Frame {idCounter + 1}",
+                            Name = $"Кадр {idCounter + 1}",
                             Bounds = path,
                             IsVisible = true
                         };
