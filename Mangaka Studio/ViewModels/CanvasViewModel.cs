@@ -48,7 +48,7 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
-        private int canvasWidth = 4000;
+        private int canvasWidth = 1920;
         public int CanvasWidth
         {
             get => canvasWidth;
@@ -59,7 +59,7 @@ namespace Mangaka_Studio.ViewModels
             }
         }
 
-        private int canvasHeight = 4000;
+        private int canvasHeight = 1080;
         public int CanvasHeight
         {
             get => canvasHeight;
@@ -297,7 +297,7 @@ namespace Mangaka_Studio.ViewModels
             return matrix.MapPoint(screenPoint);
         }
 
-        public Point GetScreenPoint(SKPoint canvasPoint)
+        public Point GetScreenPoint(SKPoint canvasPoint, Visual visualForDpi)
         {
             var matrix = SKMatrix.CreateIdentity();
 
@@ -306,8 +306,21 @@ namespace Mangaka_Studio.ViewModels
             matrix = SKMatrix.Concat(matrix, SKMatrix.CreateTranslation((float)OffsetX, (float)OffsetY));
 
             var screenPoint = matrix.MapPoint(canvasPoint);
-            return new Point(screenPoint.X, screenPoint.Y);
+            var dpi = GetDpiScale(visualForDpi);
+            return new Point(screenPoint.X / dpi.X, screenPoint.Y / dpi.Y);
         }
+
+        public static Point GetDpiScale(Visual visual)
+        {
+            PresentationSource source = PresentationSource.FromVisual(visual);
+            if (source?.CompositionTarget != null)
+            {
+                Matrix m = source.CompositionTarget.TransformToDevice;
+                return new Point(m.M11, m.M22); // X и Y масштаб (например, 1.25, 1.5 и т.д.)
+            }
+            return new Point(1.0, 1.0); // по умолчанию
+        }
+
 
         private void UpdateScale()
         {

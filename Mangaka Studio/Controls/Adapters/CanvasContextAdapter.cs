@@ -1,4 +1,5 @@
-﻿using Mangaka_Studio.Controls.Tools;
+﻿using Mangaka_Studio.Controls.Renders;
+using Mangaka_Studio.Controls.Tools;
 using Mangaka_Studio.Interfaces;
 using Mangaka_Studio.Models;
 using Mangaka_Studio.ViewModels;
@@ -136,7 +137,7 @@ namespace Mangaka_Studio.Controls.Adapters
         {
             var bounds = text.GetBounds();
             var canvasPoint = new SKPoint(bounds.Left, bounds.Top);
-            var screenPoint = canvas.GetScreenPoint(canvasPoint);
+            var screenPoint = canvas.GetScreenPoint(canvasPoint, Application.Current.MainWindow);
             Canvas.SetLeft(TextEditor, screenPoint.X);
             Canvas.SetTop(TextEditor, screenPoint.Y);
 
@@ -167,9 +168,9 @@ namespace Mangaka_Studio.Controls.Adapters
             }
         }
 
-        public Point GetScreenPoint(SKPoint canvasPoint)
+        public Point GetScreenPoint(SKPoint canvasPoint, Visual visualForDpi)
         {
-            return canvas.GetScreenPoint(canvasPoint);
+            return canvas.GetScreenPoint(canvasPoint, visualForDpi);
         }
 
         public event PropertyChangedEventHandler PropertyChanged

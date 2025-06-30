@@ -95,8 +95,14 @@ namespace Mangaka_Studio
         {
             if (frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
             UpdatePressure(e);
-            var pos1 = e.GetPosition(MainDrawing).ToSKPoint();
-            var pos = canvas.GetCanvasPoint(pos1);
+            var pos1 = e.GetPosition(MainDrawing);
+            var dpi = VisualTreeHelper.GetDpi(MainDrawing);
+            var physicalX = (float)(pos1.X * dpi.DpiScaleX);
+            var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
+            SKPoint screenPoint = new SKPoint(physicalX, physicalY);
+            SKPoint pos = canvas.GetCanvasPoint(screenPoint);
+            //var pos1 = e.GetPosition(MainDrawing).ToSKPoint();
+            //var pos = canvas.GetCanvasPoint(pos1);
 
             if (currentDrag != DragMode.None)
             {
@@ -116,7 +122,7 @@ namespace Mangaka_Studio
                 return;
             }
 
-            if (canvas.CurrentTool is TextTool && Keyboard.IsKeyDown(Key.LeftShift))
+            if (canvas.CurrentTool is TextTool && isShiftPressed)
             {
                 canvas.IsTextPosSnap = true;
             }
@@ -132,8 +138,14 @@ namespace Mangaka_Studio
         {
             if (frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
             UpdatePressure(e);
-            var pos1 = e.GetPosition(MainDrawing).ToSKPoint();
-            var pos = canvas.GetCanvasPoint(pos1);
+            var pos1 = e.GetPosition(MainDrawing);
+            var dpi = VisualTreeHelper.GetDpi(MainDrawing);
+            var physicalX = (float)(pos1.X * dpi.DpiScaleX);
+            var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
+            SKPoint screenPoint = new SKPoint(physicalX, physicalY);
+            SKPoint pos = canvas.GetCanvasPoint(screenPoint);
+            //var pos1 = e.GetPosition(MainDrawing).ToSKPoint();
+            //var pos = canvas.GetCanvasPoint(pos1);
             flag = true;
 
             if (frame.SelectFrame != null && frame.SelectFrame.IsSelected)
@@ -171,13 +183,17 @@ namespace Mangaka_Studio
             }
             flagStylus = true;
         }
+        private float _smoothedPressure = 1.0f;
+        private const float PressureSmoothingFactor = 0.1f;
 
         private void UpdatePressure(StylusEventArgs e)
         {
             var points = e.GetStylusPoints(MainDrawing);
             if (points.Count > 0)
             {
-                canvas.Pressure = points[0].PressureFactor;
+                float rawPressure = points[0].PressureFactor;
+                _smoothedPressure = _smoothedPressure * (1 - PressureSmoothingFactor) + rawPressure * PressureSmoothingFactor;
+                canvas.Pressure = _smoothedPressure;
             }
         }
 
@@ -207,7 +223,7 @@ namespace Mangaka_Studio
             var physicalX = (float)(pos1.X * dpi.DpiScaleX);
             var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
             SKPoint screenPoint = new SKPoint(physicalX, physicalY);
-            if (e.MiddleButton == MouseButtonState.Pressed)
+            if (e.MiddleButton == MouseButtonState.Pressed || isSpacePressed)
             {
                 lastPos = canvas.GetCanvasPoint(screenPoint);
                 //if (lastPos.X <= canvas.CanvasWidth && lastPos.Y <= canvas.CanvasHeight && lastPos.X >= 0 && lastPos.Y >= 0) 
@@ -253,6 +269,28 @@ namespace Mangaka_Studio
             }
         }
 
+        bool isSpacePressed = false;
+        bool isShiftPressed = false;
+
+        void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.IsRepeat) return;
+            if (e.Key == Key.Space)
+                isSpacePressed = true;
+            if (e.Key == Key.LeftShift)
+                isShiftPressed = true;
+        }
+
+        void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.IsRepeat) return;
+            if (e.Key == Key.Space)
+                isSpacePressed = false;
+            if (e.Key == Key.LeftShift)
+                isShiftPressed = false;
+        }
+
+
         private void MainDrawing_MouseMove(object sender, MouseEventArgs e)
         {
             if (flagStylus || frame.SelectFrame == null || frame.SelectFrame.LayerVM.Layers.Count == 0) return;
@@ -262,7 +300,7 @@ namespace Mangaka_Studio
             var physicalY = (float)(pos1.Y * dpi.DpiScaleY);
             SKPoint screenPoint = new SKPoint(physicalX, physicalY);
             SKPoint pos = canvas.GetCanvasPoint(screenPoint);
-            if (e.MiddleButton == MouseButtonState.Pressed && flag)
+            if (e.MiddleButton == MouseButtonState.Pressed || isSpacePressed && flag)
             {
                 SKPoint posWindow = e.GetPosition(MainDrawing).ToSKPoint();
                 //if (!(posWindow.X <= MainDrawing.ActualWidth - 50  && posWindow.Y <= MainDrawing.ActualHeight - 50 && posWindow.X >= 0 + 50 && posWindow.Y >= 0 + 50)) return;
@@ -290,7 +328,7 @@ namespace Mangaka_Studio
                 return;
             }
 
-            if (canvas.CurrentTool is TextTool && Keyboard.IsKeyDown(Key.LeftShift))
+            if (canvas.CurrentTool is TextTool && isShiftPressed)
             {
                 canvas.IsTextPosSnap = true;
             }
@@ -312,7 +350,7 @@ namespace Mangaka_Studio
                     {
                         var newX = originalBounds[i].X + dx;
                         var newY = originalBounds[i].Y + dy;
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        if (isShiftPressed)
                         {
                             newX = Snap(newX, 10);
                             newY = Snap(newY, 10);
@@ -325,7 +363,7 @@ namespace Mangaka_Studio
                     {
                         var newX = originalBounds[currentPoint].X + dx;
                         var newY = originalBounds[currentPoint].Y + dy;
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        if (isShiftPressed)
                         {
                             newX = Snap(newX, snap);
                             newY = Snap(newY, snap);
@@ -334,7 +372,7 @@ namespace Mangaka_Studio
                     }
                     else if(frame.SelectFrame.FrameMode == FrameMode.Rectangle)
                     {
-                        if (Keyboard.IsKeyDown(Key.LeftShift))
+                        if (isShiftPressed)
                         {
                             if (currentPoint == 0)
                             {

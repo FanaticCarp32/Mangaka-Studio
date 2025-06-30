@@ -151,7 +151,7 @@ namespace Mangaka_Studio.Controls.Renders
                     var text = frameViewModel.SelectFrame.LayerVM.SelectText;
                     var bounds = text.GetBounds();
                     var canvasPoint = new SKPoint(bounds.Left, bounds.Top);
-                    var screenPoint = canvasContext.GetScreenPoint(canvasPoint);
+                    var screenPoint = canvasContext.GetScreenPoint(canvasPoint, this);
 
                     Canvas.SetLeft(canvasContext.TextEditor, screenPoint.X);
                     Canvas.SetTop(canvasContext.TextEditor, screenPoint.Y);
@@ -171,8 +171,8 @@ namespace Mangaka_Studio.Controls.Renders
                     canvasContext.TextEditor.RenderTransformOrigin = new Point(0.5, 0.5);
                     canvasContext.TextEditor.RenderTransform = new RotateTransform(text.Rotate);
                     canvasContext.TextEditor.FontSize = text.FontSize * canvasContext.Scale;
-                    canvasContext.TextEditor.Width = (bounds.Width + 5) * canvasContext.Scale;
-                    canvasContext.TextEditor.Height = (bounds.Height + 5) * canvasContext.Scale;
+                    canvasContext.TextEditor.Width = (bounds.Width) * canvasContext.Scale;
+                    canvasContext.TextEditor.Height = (bounds.Height) * canvasContext.Scale;
                 }
                 InvalidateVisual();
             }
@@ -187,7 +187,7 @@ namespace Mangaka_Studio.Controls.Renders
                     var text = frameViewModel.SelectFrame.LayerVM.SelectText;
                     var bounds = text.GetBounds();
                     var canvasPoint = new SKPoint(bounds.Left, bounds.Top);
-                    var screenPoint = canvasContext.GetScreenPoint(canvasPoint);
+                    var screenPoint = canvasContext.GetScreenPoint(canvasPoint, this);
 
                     Canvas.SetLeft(canvasContext.TextEditor, screenPoint.X);
                     Canvas.SetTop(canvasContext.TextEditor, screenPoint.Y);

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Mangaka_Studio.Interfaces
 {
@@ -34,7 +35,7 @@ namespace Mangaka_Studio.Interfaces
         SKPoint? EraserCursor { get; set; }
         void NotifyEraserCursorChanged();
         void ShowTextEditor(TextModel text);
-        Point GetScreenPoint(SKPoint canvasPoint);
+        Point GetScreenPoint(SKPoint canvasPoint, Visual visualForDpi);
         event PropertyChangedEventHandler PropertyChanged;
     }
 
